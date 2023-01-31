@@ -1,0 +1,6 @@
+polyglot
+morfessor
+icu
+pycld2
+--no-binary=:pyicu: pyicu
+gensim==3.8.1
