@@ -1,0 +1,70 @@
+---
+title: "robustness_muslim_stratification"
+author: "Mina Almasi"
+date: '2023-01-21'
+output: html_document
+---
+
+```{r}
+library(tidyverse)
+library(kableExtra)
+library(janitor)
+
+#source("../../dev/model_comparison/utility.R")
+```
+
+```{r}
+perf <- readbulk::read_bulk(directory = "robustness", extension = ".csv")
+```
+
+```{r}
+perf = perf %>% 
+  mutate(across(ends_with("_acc"), ~ .x * 100),
+         across(ends_with("_f"), ~ .x * 100),
+         across(ends_with("_p"), ~ .x * 100),
+         across(ends_with("_r"), ~ .x * 100),
+         across(starts_with("dep"), ~ .x * 100)
+         )
+```
+
+```{r}
+sum_perf = perf %>% 
+  group_by(model, augmenter) %>% 
+  summarise(across(starts_with("ents"), ~ mean(.x, na.rm = TRUE)),
+            across(starts_with("token"), ~ mean(.x, na.rm = TRUE)),
+            across(starts_with("wall"), ~ mean(.x, na.rm = TRUE)),
+            across(starts_with("tag"), ~ mean(.x, na.rm = TRUE)),
+            across(starts_with("pos"), ~ mean(.x, na.rm = TRUE)),
+            across(starts_with("dep"), ~ mean(.x, na.rm = TRUE))) %>%
+  select(model, augmenter, wall_time, everything()) 
+```
+
+```{r}
+sum_perf$model <- as.factor(sum_perf$model)
+sum_perf$augmenter <- as.factor(sum_perf$augmenter)
+```
+
+```{r}
+sum_perf$augmenter <- recode_factor(sum_perf$augmenter, "Danish names" = "Danish", "Female names" = "Danish Female", "Male names" = "Danish Male", "Muslim female names" = "Muslim Female", "Muslim male names" = "Muslim Male", "Muslim names" = "Muslim")
+```
+
+
+```{r}
+augmenter_F1 <- sum_perf %>% 
+  #filter(augmenter == "Muslim female names" | augmenter == "Muslim male names") %>% 
+  filter(augmenter != "Input size augmentation 10 sentences" & augmenter != "Input size augmentation 5 sentences") %>% 
+  select(Model = model, 
+         `F1 w/o Misc` = ents_excl_MISC_ents_f,
+         augmenter = augmenter
+  )  %>% 
+  mutate(`F1 w/o Misc` = round(`F1 w/o Misc`, 1)) %>% 
+  pivot_wider(names_from = augmenter, values_from = `F1 w/o Misc`) %>% 
+  select("Model","Danish", "Muslim", "Danish Female", "Danish Male", "Muslim Female", "Muslim Male")
+
+augmenter_F1$Runs <- c(1, 1, 1, 1, 1, 1, 1, 20, 20, 20)
+
+augmenter_F1
+```
+
+
+
