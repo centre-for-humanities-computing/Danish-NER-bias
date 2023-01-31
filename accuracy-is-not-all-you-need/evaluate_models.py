@@ -2,14 +2,9 @@ from pathlib import Path
 
 import pandas as pd
 import spacy
-import spacy_stanza
-import stanza
-from spacy.training.augment import dont_augment
-
-import augmenty
 import dacy
 
-from dacy.datasets import dane, danish_names, female_names, male_names, muslim_names, load_names
+from dacy.datasets import dane
 from dacy.score import n_sents_score, score
 
 import apply_fns
@@ -22,79 +17,11 @@ import apply_fns
 # Dataset
 test = dane(splits=["test"])
 
-# Augmenters - Create a list of augmenters we wish to apply to our model.
+### Define augmenters ###
+from augmentation import dk_aug, muslim_aug, f_aug, m_aug, muslim_f_aug, muslim_m_aug
 
-# randomly augment names
-dk_name_dict = danish_names()
-muslim_name_dict = muslim_names()
-f_name_dict = female_names()
-m_name_dict = male_names()
-
-# define muslim male and female names (not helper functions yet)
-muslim_m_dict = load_names(ethnicity="muslim", gender="male", min_prop_gender=0.5)
-muslim_f_dict = load_names(ethnicity="muslim", gender="female", min_prop_gender=0.5)
-
-patterns = [["first_name"], ["first_name", "last_name"],
-            ["first_name", "last_name", "last_name"]]
-
-person_tag = "PER" # define person tag for augmenters (person_tag = PERSON for spacy models)
-
-dk_aug = augmenty.load(
-    "per_replace.v1", 
-    patterns = patterns, 
-    names = dk_name_dict, 
-    level = 1, 
-    person_tag = person_tag, 
-    replace_consistency = True
-    )
-
-f_aug = augmenty.load(
-    "per_replace.v1", 
-    patterns = patterns, 
-    names = f_name_dict, 
-    level = 1, 
-    person_tag = person_tag, 
-    replace_consistency = True
-    )
-
-m_aug = augmenty.load(
-    "per_replace.v1", 
-    patterns = patterns, 
-    names = m_name_dict, 
-    level = 1, 
-    person_tag = person_tag, 
-    replace_consistency = True
-    )
-
-muslim_aug = augmenty.load(
-    "per_replace.v1", 
-    patterns = patterns, 
-    names = muslim_name_dict, 
-    level = 1, 
-    person_tag = person_tag, 
-    replace_consistency = True
-    )
-
-muslim_f_aug = augmenty.load(
-    "per_replace.v1", 
-    patterns = patterns, 
-    names = muslim_f_dict, 
-    level = 1, 
-    person_tag = person_tag, 
-    replace_consistency = True
-    )
-
-muslim_m_aug = augmenty.load(
-    "per_replace.v1", 
-    patterns = patterns, 
-    names = muslim_m_dict, 
-    level = 1, 
-    person_tag = person_tag, 
-    replace_consistency = True
-    )
-
-n = 1 #should be 20
-# augmenter   name               n rep
+n = 20 # set at 20
+# augmenter, name, n rep
 augmenters = [
     #(dont_augment, "No augmentation", 1),
     (dk_aug, "Danish names", n),
@@ -105,9 +32,7 @@ augmenters = [
     (muslim_m_aug, "Muslim male names", n)
 ]
 
-# Apply functions and models
-# Loading application functions for necessary models. No need to create one for SpaCy pipelines.
-
+### Define Models to Run ###
 model_dict = {
     #"stanza": "da",
     "spacy_small": "da_core_news_sm",
@@ -122,7 +47,7 @@ model_dict = {
     #"nerda_bert": apply_nerda,
 }
 
-# # Performance
+### Performance ###
 
 Path("robustness").mkdir(parents=True, exist_ok=True)
 
