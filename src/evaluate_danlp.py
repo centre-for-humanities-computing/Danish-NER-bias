@@ -1,6 +1,5 @@
-#import polyglot
-import apply_fns
-from apply_fns.apply_fn_polyglot import apply_polyglot
+#import danlp
+from apply_fns.apply_fn_danlp import apply_danlp_bert
 
 # Dataset
 from dacy.datasets import dane
@@ -22,7 +21,7 @@ augmenters = [
 
 ### Define Models to Run ###
 model_dict = {
-    "polyglot": apply_polyglot,
+    "danlp_bert": apply_danlp_bert,
 }
 
 ### Performance ###

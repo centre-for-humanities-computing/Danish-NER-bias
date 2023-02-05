@@ -3,6 +3,7 @@ from pathlib import Path
 import spacy
 import dacy
 import os 
+import pandas as pd
 
 def eval_model_augmentation(model_dict, augmenters, dataset):
     '''
@@ -15,14 +16,14 @@ def eval_model_augmentation(model_dict, augmenters, dataset):
     - augmenters 
 
     output: 
-    - CSV file in folder "robustness" 
+    - CSV file in folder "robustness" (creates directory if it does not exist)
     '''
-    
+
     # define output path
     output_path = os.path.join("..", "robustness")
 
-    Path(output_path).mkdir(parents=True, exist_ok=True)
-
+    Path("../robustness").mkdir(parents=True, exist_ok=True)
+    
     # loop over all models in model_dict 
     for mdl in model_dict:
         print(f"[INFO]: Scoring model '{mdl}' using DaCy")
@@ -43,7 +44,7 @@ def eval_model_augmentation(model_dict, augmenters, dataset):
         i = 0
         scores = []
         for aug, nam, k in augmenters:
-            print(f"\t Running augmenter: {nam}")
+            print(f"\t Running augmenter: {nam} | Amount of times: {k}")
 
             scores_ = score(corpus=dataset, apply_fn=apply_fn, augmenters=aug, k=k)
             scores_["model"] = mdl
@@ -62,4 +63,4 @@ def eval_model_augmentation(model_dict, augmenters, dataset):
 
         scores = pd.concat(scores)
 
-        scores.to_csv(f"robustness/{mdl}_augmentation_performance.csv")
+        scores.to_csv(f"{output_path}/{mdl}_augmentation_performance.csv")

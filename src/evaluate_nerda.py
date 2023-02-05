@@ -1,6 +1,6 @@
-#import polyglot
+#import flair
 import apply_fns
-from apply_fns.apply_fn_polyglot import apply_polyglot
+from apply_fns.apply_fn_nerda import apply_nerda
 
 # Dataset
 from dacy.datasets import dane
@@ -22,7 +22,7 @@ augmenters = [
 
 ### Define Models to Run ###
 model_dict = {
-    "polyglot": apply_polyglot,
+    "nerda_bert": apply_nerda,
 }
 
 ### Performance ###
