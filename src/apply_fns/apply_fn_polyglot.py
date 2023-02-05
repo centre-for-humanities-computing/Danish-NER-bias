@@ -9,6 +9,11 @@ from spacy.training import Example
 
 from .apply_fn_utils import add_iob, apply_on_multiple_examples, no_misc_getter
 
+from polyglot.downloader import downloader
+downloader.download("embeddings2.da")
+downloader.download("pos2.da")
+downloader.download("ner2.da")
+
 ne_chunker = NEChunker(lang="da")
 pos_tagger = POSTagger(lang="da")
 
