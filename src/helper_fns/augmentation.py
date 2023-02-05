@@ -41,7 +41,7 @@ person_tag = "PER"
 
 # define all augmenters 
 dk_aug = augmenty.load(
-    "per_replace.v1", 
+    "per_replace_v1", 
     patterns = patterns, 
     names = dk_name_dict, 
     level = 1, 
@@ -50,7 +50,7 @@ dk_aug = augmenty.load(
     )
 
 f_aug = augmenty.load(
-    "per_replace.v1", 
+    "per_replace_v1", 
     patterns = patterns, 
     names = f_name_dict, 
     level = 1, 
@@ -59,7 +59,7 @@ f_aug = augmenty.load(
     )
 
 m_aug = augmenty.load(
-    "per_replace.v1", 
+    "per_replace_v1", 
     patterns = patterns, 
     names = m_name_dict, 
     level = 1, 
@@ -68,7 +68,7 @@ m_aug = augmenty.load(
     )
 
 muslim_aug = augmenty.load(
-    "per_replace.v1", 
+    "per_replace_v1", 
     patterns = patterns, 
     names = muslim_name_dict, 
     level = 1, 
@@ -77,7 +77,7 @@ muslim_aug = augmenty.load(
     )
 
 muslim_f_aug = augmenty.load(
-    "per_replace.v1", 
+    "per_replace_v1", 
     patterns = patterns, 
     names = muslim_f_dict, 
     level = 1, 
@@ -86,7 +86,7 @@ muslim_f_aug = augmenty.load(
     )
 
 muslim_m_aug = augmenty.load(
-    "per_replace.v1", 
+    "per_replace_v1", 
     patterns = patterns, 
     names = muslim_m_dict, 
     level = 1, 

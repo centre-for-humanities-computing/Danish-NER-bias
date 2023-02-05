@@ -7,7 +7,7 @@ import dacy
 from dacy.datasets import dane
 from dacy.score import n_sents_score, score
 
-import apply_fns
+#import apply_fns
 #from apply_fns.apply_fn_danlp import apply_danlp_bert
 #from apply_fns.apply_fn_nerda import apply_nerda
 
@@ -20,10 +20,9 @@ test = dane(splits=["test"])
 ### Define augmenters ###
 from augmentation import dk_aug, muslim_aug, f_aug, m_aug, muslim_f_aug, muslim_m_aug
 
-n = 20 # set at 20
-# augmenter, name, n rep
+n = 20
+# augmenter, name, n repetitions 
 augmenters = [
-    #(dont_augment, "No augmentation", 1),
     (dk_aug, "Danish names", n),
     (muslim_aug, "Muslim names", n),
     (f_aug, "Female names", n),
@@ -34,8 +33,7 @@ augmenters = [
 
 ### Define Models to Run ###
 model_dict = {
-    #"stanza": "da",
-    "spacy_small": "da_core_news_sm",
+    #"spacy_small": "da_core_news_sm",
     #"spacy_medium": "da_core_news_md",
     #"spacy_large": "da_core_news_lg",
     #"dacy_small": "da_dacy_small_trf-0.1.0",
