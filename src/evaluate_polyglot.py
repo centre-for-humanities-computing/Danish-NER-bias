@@ -1,6 +1,10 @@
 import pandas as pd
 import spacy
 
+#import polyglot
+import apply_fns
+from apply_fns.apply_fn_polyglot import apply_polyglot
+
 # Dataset
 from dacy.datasets import dane
 testdata = dane(splits=["test"])
@@ -19,15 +23,12 @@ augmenters = [
     (muslim_m_aug, "Muslim male names", n)
 ]
 
-### Define Models to Evaluate ###
+### Define Models to Run ###
 model_dict = {
-    "spacy_small": "da_core_news_sm",
-    "spacy_medium": "da_core_news_md",
-    "spacy_large": "da_core_news_lg",
+    "polyglot": apply_polyglot,
 }
 
-### Evaluate models ###
+### Performance ###
 from helper_fns.performance import eval_model_augmentation 
 
 eval_model_augmentation(model_dict, augmenters, testdata)
-

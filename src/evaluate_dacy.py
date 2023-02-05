@@ -19,15 +19,14 @@ augmenters = [
     (muslim_m_aug, "Muslim male names", n)
 ]
 
-### Define Models to Evaluate ###
+### Define Models to Run ###
 model_dict = {
-    "spacy_small": "da_core_news_sm",
-    "spacy_medium": "da_core_news_md",
-    "spacy_large": "da_core_news_lg",
+    "dacy_small": "da_dacy_small_trf-0.1.0",
+    "dacy_medium": "da_dacy_medium_trf-0.1.0",
+    "dacy_large": "da_dacy_large_trf-0.1.0",
 }
 
-### Evaluate models ###
+### Performance ###
 from helper_fns.performance import eval_model_augmentation 
 
 eval_model_augmentation(model_dict, augmenters, testdata)
-
