@@ -7,7 +7,7 @@ from dacy.datasets import dane
 testdata = dane(splits=["test"])
 
 ### Define augmenters ###
-from helper_fns.augmentation import dk_aug, muslim_aug, f_aug, m_aug, muslim_f_aug, muslim_m_aug
+from helper_fns.augmentation import dk_aug, muslim_aug, f_aug, m_aug, muslim_f_aug, muslim_m_aug, unisex_aug
 
 n = 20
 # augmenter, name, n repetitions 
@@ -17,7 +17,8 @@ augmenters = [
     (f_aug, "Female names", n),
     (m_aug, "Male names", n),
     (muslim_f_aug, "Muslim female names", n),
-    (muslim_m_aug, "Muslim male names", n)
+    (muslim_m_aug, "Muslim male names", n),
+    (unisex_aug, "Unisex names", n),
 ]
 
 ### Define Models to Run ###

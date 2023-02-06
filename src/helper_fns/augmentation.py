@@ -1,5 +1,6 @@
 import augmenty 
 from dacy.datasets import danish_names, female_names, male_names, muslim_names, load_names
+import pandas as pd 
 
 ### LOAD all names ##
 dk_name_dict = danish_names()
@@ -29,6 +30,10 @@ m_name_dict["first_name"] = remove_duplicates(m_name_dict["first_name"], muslim_
 # for muslim genders
 muslim_f_dict["first_name"] = remove_duplicates(muslim_f_dict["first_name"], danish_only)
 muslim_m_dict["first_name"] = remove_duplicates(muslim_m_dict["first_name"], danish_only)
+
+## UNISEX ## 
+unisex_first_names = pd.read_csv('unisex-navne.csv', usecols=['Navn'])
+unisex_name_dict = {'first_name':unisex_first_names, 'last_name':dk_name_dict['last_name']}
 
 ## AUGMENTATION ## 
 
@@ -89,6 +94,15 @@ muslim_m_aug = augmenty.load(
     "per_replace_v1", 
     patterns = patterns, 
     names = muslim_m_dict, 
+    level = 1, 
+    person_tag = person_tag, 
+    replace_consistency = True
+    )
+
+unisex_aug = augmenty.load(
+    "per_replace_v1", 
+    patterns = patterns, 
+    names = unisex_name_dict, 
     level = 1, 
     person_tag = person_tag, 
     replace_consistency = True
