@@ -1,7 +1,4 @@
 #!/bin/bash
-#virtual envs
-source /home/coder/.local/bin/virtualenvwrapper.sh
-#mkvirtualenv polyglotmodel
 
 # install dev tools
 apt-get update && apt-get install -y apt-transport-https

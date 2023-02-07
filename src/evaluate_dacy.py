@@ -2,7 +2,7 @@ import spacy
 
 # Dataset
 from dacy.datasets import dane
-testdata = dane(splits=["test"])
+testdata = dane(splits=["test"], redownload=True, open_unverified_connected=True)
 
 ### Define augmenters ###
 from helper_fns.augmentation import dk_aug, muslim_aug, f_aug, m_aug, muslim_f_aug, muslim_m_aug, unisex_aug
@@ -21,7 +21,7 @@ augmenters = [
 
 ### Define Models to Run ###
 model_dict = {
-    "dacy_small": "da_dacy_small_trf-0.1.0",
+    #"dacy_small": "da_dacy_small_trf-0.1.0",
     "dacy_medium": "da_dacy_medium_trf-0.1.0",
     "dacy_large": "da_dacy_large_trf-0.1.0",
 }
