@@ -12,12 +12,12 @@ library(tidyverse)
 library(kableExtra)
 library(janitor)
 
-source("../../dev/model_comparison/utility.R")
+source("prelim results/DaCY results/utility.R")
 ```
 
 
 ```{r read files}
-perf = read_csv("augmentation_robustness.csv")
+perf = read_csv("prelim results/DaCY results/augmentation_robustness.csv")
 
 perf = perf %>% 
   mutate(across(ends_with("_acc"), ~ .x * 100),

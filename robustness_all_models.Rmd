@@ -1,0 +1,158 @@
+---
+title: "robustness_muslim_stratification"
+author: "Mina Almasi"
+date: '2023-01-21'
+output: html_document
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r}
+library(tidyverse)
+library(kableExtra)
+library(janitor)
+
+#source("../../dev/model_comparison/utility.R")
+```
+
+```{r}
+perf <- readbulk::read_bulk(directory = "robustness", extension = ".csv")
+```
+
+```{r}
+perf = perf %>% 
+  mutate(across(ends_with("_acc"), ~ .x * 100),
+         across(ends_with("_f"), ~ .x * 100),
+         across(ends_with("_p"), ~ .x * 100),
+         across(ends_with("_r"), ~ .x * 100),
+         across(starts_with("dep"), ~ .x * 100)
+         )
+```
+
+```{r}
+sum_perf = perf %>% 
+  group_by(model, augmenter) %>% 
+  summarise(across(starts_with("ents"), ~ mean(.x, na.rm = TRUE)),
+            across(starts_with("token"), ~ mean(.x, na.rm = TRUE)),
+            across(starts_with("wall"), ~ mean(.x, na.rm = TRUE)),
+            across(starts_with("tag"), ~ mean(.x, na.rm = TRUE)),
+            across(starts_with("pos"), ~ mean(.x, na.rm = TRUE)),
+            across(starts_with("dep"), ~ mean(.x, na.rm = TRUE))) %>%
+  select(model, augmenter, wall_time, everything()) 
+```
+
+```{r}
+score_t_test = function(mdl, augmenter, default, data, score){
+  d = data %>% filter(model == mdl)
+
+  x = d[[score]][d$augmenter == augmenter]
+  mu = d[[score]][d$augmenter == default]
+  
+  if (length(mu) == 1){
+    t = t.test(x = x,
+           mu = mu, paired = FALSE, var.equal = FALSE,
+           conf.level = 0.95)
+  } else {
+    t = t.test(x = x,
+           y = mu, paired = FALSE, var.equal = FALSE,
+           conf.level = 0.95) 
+  }
+  return (t)
+}
+
+score_to_df = function(data, score){
+  dfs = NULL
+  i = 1
+  for(mdl in unique(data$model)){
+    for (aug in unique(data$augmenter)){
+      v = data[[score]][data$augmenter == aug & data$model == mdl]
+      
+      if (length(v) <= 2){
+          dfs[[i]] = tibble(model=mdl, augmenter=aug, mean=v[1], sd=NA, 
+                    conf_int = "",
+                    p_value=NA)
+          i = i+1
+          next
+      }
+      
+      mu = mean(v)
+      sigma = sd(v)
+      print(paste(mdl, aug, length(v)))
+      if (aug %in% c("Female names", "Muslim names", "Male names", "Muslim male names", "Muslim female names", "Unisex names")){
+        default = "Danish names"
+      } else {
+        default = "No augmentation"
+      }
+      t = score_t_test(mdl=mdl, augmenter=aug, default=default, data=data, score=score)
+      
+      p = p.adjust(t$p.value, method = "bonferroni", n = 7)
+
+      dfs[[i]] = tibble(model=mdl, augmenter=aug, mean=mu, sd=sigma, 
+                        conf_int = paste("(",  round(t$conf.int[1], 2),", ",  round(t$conf.int[2], 2), ")", sep = ""),
+                        p_value=p)
+      i = i+1
+    }
+  }
+  return(bind_rows(dfs))
+}
+```
+
+```{r}
+sum_perf$model <- as.factor(sum_perf$model)
+sum_perf$augmenter <- as.factor(sum_perf$augmenter)
+```
+
+```{r}
+sum_perf$augmenter <- recode_factor(sum_perf$augmenter, 
+                                    "Danish names" = "Majority all", 
+                                    "Female names" = "Majority Women", 
+                                    "Male names" = "Majority Men", 
+                                    "Muslim female names" = "Minority Women", 
+                                    "Muslim male names" = "Minority Men", 
+                                    "Muslim names" = "Minority all", 
+                                    "Unisex names" = "Unisex"
+                                    )
+```
+
+```{r}
+levels(sum_perf$augmenter)
+```
+
+
+```{r}
+augmenter_F1 <- sum_perf %>% 
+  filter(augmenter != "Input size augmentation 10 sentences" & augmenter != "Input size augmentation 5 sentences") %>% 
+  select(Model = model, 
+         `F1 w/o Misc` = ents_excl_MISC_ents_f,
+         augmenter = augmenter
+  )  %>% 
+  mutate(`F1 w/o Misc` = round(`F1 w/o Misc`, 1)) %>% 
+  pivot_wider(names_from = augmenter, values_from = `F1 w/o Misc`) %>% 
+  select("Model","Majority all", "Minority all", "Majority Women", "Majority Men", "Minority Women", "Minority Men", "Unisex")
+```
+
+## Renaming model names
+```{r}
+## original model names
+names_from = c("spacy_large", "spacy_medium", "dacy_large", "dacy_medium", "danlp_bert", "spacy_small", "flair", "nerda_bert", "dacy_small", "polyglot")
+
+
+## new model names
+names_to = c("SpaCy large", "SpaCy medium", "DaCy large", "DaCy medium", "DaNLP BERT", "SpaCy small", 
+                   "Flair", "NERDA", "DaCy small", "Polyglot")
+```
+
+```{r}
+augmenter_F1$Model <- plyr::mapvalues(augmenter_F1$Model, from=names_from, to=names_to)
+```
+
+```{r}
+augmenter_F1 %>% 
+  kbl(booktabs = F) %>% 
+  kable_material(c("basic"))  %>% 
+  add_header_above(c(" ", "Names" = 7))
+```
+
+
+
+
