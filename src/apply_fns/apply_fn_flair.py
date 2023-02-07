@@ -8,6 +8,10 @@ from spacy.lang.da import Danish
 from spacy.tokens import Doc
 from spacy.training import Example
 
+#import certificate to download flair
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
 tagger_ner = load_flair_ner_model()
 tagger_pos = load_flair_pos_model()
 nlp_da = Danish()

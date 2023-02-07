@@ -1,10 +1,10 @@
-#import flair
+#import nerda
 import apply_fns
 from apply_fns.apply_fn_nerda import apply_nerda
 
 # Dataset
 from dacy.datasets import dane
-testdata = dane(splits=["test"])
+testdata = dane(splits=["test"], redownload=True, open_unverified_connected=True)
 
 ### Define augmenters ###
 from helper_fns.augmentation import dk_aug, muslim_aug, f_aug, m_aug, muslim_f_aug, muslim_m_aug, unisex_aug
