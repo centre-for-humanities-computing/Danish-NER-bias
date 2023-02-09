@@ -107,6 +107,7 @@ ent_perf <- score_to_df(f1misc, "ents_excl_MISC_ents_f", "Danish names")
 ```
 
 ```{r ent_perf}
+# create performance table with p-values, standard deviation in parenthesis
 ent_per_tbl = ent_perf %>% 
   mutate(mean = paste(format(round_half_up(mean, 1), digits = 1, nsmall=1)),
          p_value_star = if_else(p_value < 0.05, "*", "", missing =""),
@@ -122,14 +123,15 @@ ent_per_tbl = ent_perf %>%
 
 high_columns = names(ent_per_tbl)[2:ncol(ent_per_tbl)]
 
+# create performance table using kableextra
 ent_per_tbl %>% 
   kbl(booktabs=T, 
-      # format="latex",
+      #format="latex",
       align=c("l", rep("c", nrow(.)-1)),
       table.attr = "style='width:30%;'") %>% 
   highlight_highest(., ent_per_tbl, columns = high_columns) %>% 
+  
   kable_styling(full_width = F) %>%
-  kable_material(c("striped", "condensed")) 
+  kable_material(c("basic", "condensed")) 
 ```
-
 
