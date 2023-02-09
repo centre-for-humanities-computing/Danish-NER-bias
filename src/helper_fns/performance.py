@@ -34,10 +34,6 @@ def eval_model_augmentation(model_dict, augmenters, dataset):
         elif "spacy" in mdl:
             apply_fn = spacy.load(model_dict[mdl])
             spacy.prefer_gpu()
-        elif "stanza" in mdl:
-            stanza.download(model_dict[mdl])
-            # Initialize the pipeline
-            apply_fn = spacy_stanza.load_pipeline(model_dict[mdl])
         else:
             apply_fn = model_dict[mdl]
 
@@ -53,13 +49,6 @@ def eval_model_augmentation(model_dict, augmenters, dataset):
             scores.append(scores_)
 
             i += 1
-
-        for n in [5, 10]:
-            scores_ = n_sents_score(n_sents=n, apply_fn=apply_fn)
-            scores_["model"] = mdl
-            scores_["augmenter"] = f"Input size augmentation {n} sentences"
-            scores_["i"] = i + 1
-            scores.append(scores_)
 
         scores = pd.concat(scores)
 

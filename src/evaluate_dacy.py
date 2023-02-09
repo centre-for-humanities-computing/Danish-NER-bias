@@ -26,15 +26,15 @@ augmenters = [
 ]
 
 ### Define Models to Run ###
-#loading Dan Nielsen's NER component to use his state-of-the-art model
-scandi_ner_lg =  dacy.load("da_dacy_large_trf-0.1.0", exclude=["ner"])
-scandi_ner_lg.add_pipe("dacy/ner")
+# load ScandiNER (https://huggingface.co/saattrupdan/nbailab-base-ner-scandi) 
+scandi_ner = spacy.blank("da")
+scandi_ner.add_pipe("dacy/ner")
 
 model_dict = {
     #"dacy_small": "da_dacy_small_trf-0.1.0",
     #"dacy_medium": "da_dacy_medium_trf-0.1.0",
     #"dacy_large": "da_dacy_large_trf-0.1.0",
-    "scandi_ner_lg": scandi_ner_lg,
+    "scandi_ner": scandi_ner,
 }
 
 ### Performance ###
