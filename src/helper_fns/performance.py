@@ -34,6 +34,11 @@ def eval_model_augmentation(model_dict, augmenters, dataset):
         elif "spacy" in mdl:
             apply_fn = spacy.load(model_dict[mdl])
             spacy.prefer_gpu()
+            
+        # load ScandiNER (https://huggingface.co/saattrupdan/nbailab-base-ner-scandi) using Dacy (https://centre-for-humanities-computing.github.io/DaCy/using_dacy.getting_started.html#named-entity-recognition)
+        elif "scandi" in mdl: 
+            apply_fn = spacy.blank("da")
+            apply_fn.add_pipe("dacy/ner")
         else:
             apply_fn = model_dict[mdl]
 
