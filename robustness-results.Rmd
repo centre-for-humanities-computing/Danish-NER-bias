@@ -11,6 +11,8 @@ This notebook contains code for producing the table in the paper.
 library(tidyverse)
 library(kableExtra)
 library(janitor)
+
+source("utils-R/utility.R")
 ```
 
 
@@ -130,8 +132,6 @@ ent_per_tbl %>%
       align=c("l", rep("c", nrow(.)-1)),
       table.attr = "style='width:30%;'") %>% 
   highlight_highest(., ent_per_tbl, columns = high_columns) %>% 
-  
   kable_styling(full_width = F) %>%
   kable_material(c("basic", "condensed")) 
 ```
-
