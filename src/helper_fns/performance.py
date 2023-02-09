@@ -50,6 +50,13 @@ def eval_model_augmentation(model_dict, augmenters, dataset):
 
             i += 1
 
+        for n in [5, 10]:
+            scores_ = n_sents_score(n_sents=n, apply_fn=apply_fn)
+            scores_["model"] = mdl
+            scores_["augmenter"] = f"Input size augmentation {n} sentences"
+            scores_["i"] = i + 1
+            scores.append(scores_)
+
         scores = pd.concat(scores)
 
         scores.to_csv(f"{output_path}/{mdl}_augmentation_performance.csv")
