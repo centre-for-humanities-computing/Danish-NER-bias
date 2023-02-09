@@ -1,4 +1,4 @@
-#import ssl certificate to import spacy 
+#import ssl certificate to download spacy models
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 

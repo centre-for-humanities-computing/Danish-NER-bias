@@ -1,4 +1,10 @@
+#import ssl certificate to download spacy models
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
+# import packages
 import spacy
+import dacy 
 
 # Dataset
 from dacy.datasets import dane
@@ -20,10 +26,15 @@ augmenters = [
 ]
 
 ### Define Models to Run ###
+#loading Dan Nielsen's NER component to use his state-of-the-art model
+scandi_ner_lg =  dacy.load("da_dacy_large_trf-0.1.0", exclude=["ner"])
+scandi_ner_lg.add_pipe("dacy/ner")
+
 model_dict = {
     #"dacy_small": "da_dacy_small_trf-0.1.0",
-    "dacy_medium": "da_dacy_medium_trf-0.1.0",
-    "dacy_large": "da_dacy_large_trf-0.1.0",
+    #"dacy_medium": "da_dacy_medium_trf-0.1.0",
+    #"dacy_large": "da_dacy_large_trf-0.1.0",
+    "scandi_ner_lg": scandi_ner_lg,
 }
 
 ### Performance ###

@@ -26,3 +26,13 @@ deactivate
 # new env
 mkvirtual others
 # ... do the same thing as above
+
+## ross' suggestions 
+python3 -m venv env
+source ./env/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+python src/evaluate_dacy.py
+deactivate
+rm -rf env
+
