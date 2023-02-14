@@ -1,10 +1,13 @@
 import pandas as pd 
+from dacy.datasets import female_names, male_names
 
-from duplicates_clean import dk_name_dict, f_name_dict, m_name_dict
+#import
+f_name_dict = female_names()
+m_name_dict = male_names()
 
 # read in csv files
-men_2023 = pd.read_csv("fornavne_2023_maend.csv")
-women_2023 = pd.read_csv("fornavne_2023_kvinder.csv")
+men_2023 = pd.read_csv("../names_csv_files/fornavne_2023_maend.csv")
+women_2023 = pd.read_csv("../names_csv_files/fornavne_2023_kvinder.csv")
 
 # capitalize names to follow same structure as older list (str.title to make Åge-Hans and not Åge-hans with capitalize fn)
 men_2023["Navn"] = men_2023["Navn"].str.title()
@@ -27,20 +30,15 @@ def find_overlap(lst1, lst2):
 
     return len_overlap, overlap
 
-# overlaps for entire men names 2023 
+# subset men 2023 and women 2023 
+subset_men_2023_names = all_men_2023_names[:600]
+subset_women_2023_names = all_women_2023_names[:600]
+
+#calculate overlap
 men_all_overlap = find_overlap(men_old_names, all_men_2023_names)
-
-# subset men 2023
-subset_men_2023_names = all_men_2023_names[:len(men_old_names)]
-
-men_subset_overlap = find_overlap(men_old_names, subset_men_2023_names)
-
-# overlaps for entire women names 2023 
 women_all_overlap = find_overlap(women_old_names, all_women_2023_names)
 
-# subset women 2023
-subset_women_2023_names = all_women_2023_names[:len(women_old_names)]
-
+men_subset_overlap = find_overlap(men_old_names, subset_men_2023_names)
 women_subset_overlap = find_overlap(women_old_names, subset_women_2023_names)
 
 ## all overlaps 
@@ -65,3 +63,17 @@ print("\n")
 print(pd.DataFrame(lengths))
 
 print("\n")
+
+from dacy.datasets import load_names
+muslim_m_dict = load_names(ethnicity="muslim", gender="male", min_prop_gender=0.5)
+muslim_w_dict = load_names(ethnicity="muslim", gender="female", min_prop_gender=0.5)
+
+muslim_m_first = muslim_m_dict["first_name"]
+muslim_w_first = muslim_w_dict["first_name"]
+
+overlap_women_muslim = find_overlap(subset_women_2023_names, muslim_w_first)
+overlap_men_muslim = find_overlap(subset_men_2023_names, muslim_m_first)
+
+overlaps = pd.DataFrame({"navn":overlap_women_muslim[1] + overlap_men_muslim[1], "origin":""})
+print(overlaps)
+overlaps.to_csv("overlapping_names.csv")
