@@ -49,15 +49,16 @@ overlaps = {
     "Men overlaps" : [men_all_overlap[0], men_subset_overlap[0]],
     "Women overlaps": [women_all_overlap[0], women_subset_overlap[0]],
 }
-print("\n")
-
-print(pd.DataFrame(overlaps))
 
 lengths = {
     "Lists": ["all m/w 2023 names", "2023 subset popular", "old names"],
     "Women (Len)": [len(all_women_2023_names), len(subset_women_2023_names), len(women_old_names)],
     "Men (Len)": [len(all_men_2023_names), len(subset_men_2023_names), len(men_old_names)]
 }
+
+print("\n")
+
+print(pd.DataFrame(overlaps))
 
 print("\n")
 

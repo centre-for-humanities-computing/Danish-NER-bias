@@ -1,7 +1,7 @@
 import augmenty 
 
 #import cleaned data
-from process_data.duplicates_clean import (
+from helper_fns.duplicates_clean import (
                                 dk_name_dict, f_name_dict, m_name_dict, 
                                 muslim_name_dict, muslim_f_dict, muslim_m_dict, 
                                 unisex_name_dict

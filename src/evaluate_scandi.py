@@ -22,12 +22,6 @@ augmenters = [
 ]
 
 ### Define Models to Run ###
-# load ScandiNER (https://huggingface.co/saattrupdan/nbailab-base-ner-scandi) using Dacy (https://centre-for-humanities-computing.github.io/DaCy/using_dacy.getting_started.html#named-entity-recognition)
-#scandi_ner = spacy.blank("da")
-#scandi_ner.add_pipe("dacy/ner")
-
-
-
 model_dict = {
     "scandi_ner": scandi_ner
 }
