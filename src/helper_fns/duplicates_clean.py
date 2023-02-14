@@ -34,6 +34,6 @@ muslim_f_dict["first_name"] = remove_duplicates(muslim_f_dict["first_name"], dan
 muslim_m_dict["first_name"] = remove_duplicates(muslim_m_dict["first_name"], danish_only)
 
 # unisex 
-unisex_first_names = pd.read_csv('helper_fns/unisex-navne.csv', usecols=['Navn'])
+unisex_first_names = pd.read_csv('unisex-navne.csv', usecols=['Navn'])
 unisex_first_names = list(unisex_first_names['Navn'])
 unisex_name_dict = {'first_name':unisex_first_names, 'last_name':dk_name_dict['last_name']}
