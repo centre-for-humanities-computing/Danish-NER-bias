@@ -1,6 +1,6 @@
 #pandas pd 
 import pandas as pd
-from dacy.datasets import danish_names, female_names, male_names, muslim_names, load_names
+from dacy.datasets import muslim_names, load_names
 
 # define path 
 from pathlib import Path

@@ -1,6 +1,10 @@
 ### pip install polyglot morfessor==2.0.6 pycld2==0.41 pyicu
-### polyglot download pos2.da
 
+# setup certificate to download polyglot extras
+import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
+
+#import  
 from polyglot.tag import NEChunker, POSTagger
 from polyglot.text import Text, WordList
 from spacy.lang.da import Danish
@@ -9,14 +13,15 @@ from spacy.training import Example
 
 from .apply_fn_utils import add_iob, apply_on_multiple_examples, no_misc_getter
 
+#download danish specific stuff
 from polyglot.downloader import downloader
 downloader.download("embeddings2.da")
 downloader.download("pos2.da")
 downloader.download("ner2.da")
 
+#load model
 ne_chunker = NEChunker(lang="da")
 pos_tagger = POSTagger(lang="da")
-
 
 nlp_da = Danish()
 

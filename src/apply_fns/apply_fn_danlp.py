@@ -2,15 +2,16 @@
 
 # to download the danlp and nerda you will have to set up a certificate:
 import ssl
+ssl._create_default_https_context = ssl._create_unverified_context
 
+#import
 from danlp.models import load_bert_ner_model
 from spacy.lang.da import Danish
 from spacy.training import Example
 
 from .apply_fn_utils import add_iob, apply_on_multiple_examples, no_misc_getter
 
-ssl._create_default_https_context = ssl._create_unverified_context
-
+#load model
 bert_model = load_bert_ner_model()
 nlp_da = Danish()
 
