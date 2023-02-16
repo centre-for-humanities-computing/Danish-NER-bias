@@ -83,10 +83,10 @@ score_to_df = function(data, score, baseline){
 
 ```{r rename model and aug}
 # original model names
-names_from = c("spacy_large", "spacy_medium", "dacy_large", "dacy_medium", "danlp_bert", "spacy_small", "flair", "nerda_bert", "dacy_small", "polyglot")
+names_from = c("spacy_large", "spacy_medium", "dacy_large", "dacy_medium", "danlp_bert", "spacy_small", "flair", "nerda_bert", "dacy_small", "polyglot", "scandi_ner")
 
 # new model names
-names_to = c("SpaCy large", "SpaCy medium", "DaCy large", "DaCy medium", "DaNLP BERT", "SpaCy small", "Flair", "NERDA", "DaCy small", "Polyglot")
+names_to = c("SpaCy large", "SpaCy medium", "DaCy large", "DaCy medium", "DaNLP BERT", "SpaCy small", "Flair", "NERDA", "DaCy small", "Polyglot", "ScandiNER")
 
 # aug names original
 aug_names_from = c("Danish names", "Muslim names", "Female names", "Male names", "Muslim female names","Muslim male names", "Unisex names") 
@@ -108,9 +108,14 @@ select(model,
 ent_perf <- score_to_df(f1misc, "ents_excl_MISC_ents_f", "Danish names")
 ```
 
+```{r}
+order_models <- c("scandi_ner","dacy_large", "dacy_medium", "dacy_small", "danlp_bert", "flair", "nerda_bert", "polyglot", "spacy_large", "spacy_medium", "spacy_small")
+```
+
+
 ```{r ent_perf}
 # create performance table with p-values, standard deviation in parenthesis
-ent_per_tbl = ent_perf %>% 
+ent_per_tbl = ent_perf %>% arrange(factor(model, levels = order_models)) %>% 
   mutate(mean = paste(format(round_half_up(mean, 1), digits = 1, nsmall=1)),
          p_value_star = if_else(p_value < 0.05, "*", "", missing =""),
          string_value = if_else(is.na(sd), paste(mean, sep=""),
@@ -128,7 +133,7 @@ high_columns = names(ent_per_tbl)[2:ncol(ent_per_tbl)]
 # create performance table using kableextra
 ent_per_tbl %>% 
   kbl(booktabs=T, 
-      #format="latex",
+      format="latex",
       align=c("l", rep("c", nrow(.)-1)),
       table.attr = "style='width:30%;'") %>% 
   highlight_highest(., ent_per_tbl, columns = high_columns) %>% 
