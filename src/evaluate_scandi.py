@@ -9,7 +9,7 @@ testdata = dane(splits=["test"], redownload=True, open_unverified_connected=True
 ### Define augmenters ###
 from helper_fns.augmentation import dk_aug, muslim_aug, f_aug, m_aug, muslim_f_aug, muslim_m_aug, unisex_aug
 
-n = 1
+n = 20
 # augmenter, name, n repetitions 
 augmenters = [
     (dk_aug, "Danish names", n),
