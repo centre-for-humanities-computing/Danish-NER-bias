@@ -69,7 +69,7 @@ score_to_df = function(data, score, baseline){
       print(paste(mdl, aug, length(v)))
       t = score_t_test(mdl=mdl, augmenter=aug, default=baseline, data=data, score=score)
       
-      p = p.adjust(t$p.value, method = "bonferroni", n = 7)
+      p = p.adjust(t$p.value, method = "bonferroni", n = 6)
 
       dfs[[i]] = tibble(model=mdl, augmenter=aug, mean=mu, sd=sigma, 
                         conf_int = paste("(",  round(t$conf.int[1], 2),", ",  round(t$conf.int[2], 2), ")", sep = ""),
@@ -107,6 +107,7 @@ select(model,
 ```{r}
 ent_perf <- score_to_df(f1misc, "ents_excl_MISC_ents_f", "Danish names")
 ```
+
 
 ```{r}
 order_models <- c("scandi_ner","dacy_large", "dacy_medium", "dacy_small", "danlp_bert", "flair", "nerda_bert", "polyglot", "spacy_large", "spacy_medium", "spacy_small")
