@@ -1,5 +1,5 @@
 '''
-Script to evaluate DaCY models in a NER task on the DANE test dataset when running several data augmentations on first & last names [PER] (e.g., majority vs minority names)
+Script to evaluate DaCY models in a NER task on the DaNE test dataset when running several data augmentations on first & last names [PER] (e.g., majority vs minority names)
     
     Concretely, the models are:
     1. da_dacy_small_trf-0.1.0

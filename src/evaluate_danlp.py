@@ -1,5 +1,5 @@
 '''
-Script to evaluate DaNLP BERT in a NER task on the DANE test dataset when running several data augmentations on first & last names [PER] (e.g., majority vs minority names)
+Script to evaluate DaNLP BERT in a NER task on the DaNE test dataset when running several data augmentations on first & last names [PER] (e.g., majority vs minority names)
 
 '''
 
