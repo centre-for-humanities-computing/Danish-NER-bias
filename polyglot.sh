@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # activate virtual environment 
-echo -e "[INFO:] Creating environment" # user msg
+echo -e "[INFO:] Creating environment ..." # user msg
 python3.9 -m venv polyenv
 source ./polyenv/bin/activate
 
