@@ -17,7 +17,7 @@ source("utils-R/utility.R")
 
 
 ```{r read files}
-perf <- readbulk::read_bulk(directory = "robustness", extension = ".csv")
+perf <- readbulk::read_bulk(directory = "results", extension = ".csv")
 
 perf = perf %>% 
   mutate(across(ends_with("_acc"), ~ .x * 100),
