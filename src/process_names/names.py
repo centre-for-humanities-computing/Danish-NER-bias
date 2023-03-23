@@ -1,25 +1,29 @@
-#pandas pd 
+'''
+Script for preprocessing the name lists before data augmentation and running evaluate_model.py scripts
+'''
+
+# system tools 
+from pathlib import Path
+
+# data set wrangling
 import pandas as pd
 from dacy.datasets import muslim_names, load_names
 
-# define path 
-from pathlib import Path
-path = Path(__file__) # path to current file
-path.parents[1] # two directories up
-data_folder = path.parents[1] / "names_csv_files" 
-
 ### DEFINE NAMES ### 
+# import names
+path = Path(__file__) # path to current file
+data_folder = path.parents[2] / "name_lists" 
 
 ## last names ##
 last_names_2023 = pd.read_csv(data_folder / "last_names_2023.csv")
-last_names_2023["Navn"] = last_names_2023["Navn"].str.title() #capitalize
+last_names_2023["Navn"] = last_names_2023["Navn"].str.title() # capitalize
 last_names_2023 = list(last_names_2023["Navn"])[:500] # subset to only 500 to match 500 first names
 
 ## men and women first names ##
 men_2023 = pd.read_csv(data_folder / "first_names_2023_men.csv")
 women_2023 = pd.read_csv(data_folder / "first_names_2023_women.csv")
 
-#capitalize
+# capitalize
 men_2023["Navn"] = men_2023["Navn"].str.title()
 women_2023["Navn"] = women_2023["Navn"].str.title()
 
@@ -47,7 +51,7 @@ muslim_f_dict = load_names(ethnicity="muslim", gender="female", min_prop_gender=
 
 ### REMOVE OVERLAPS ##
 import pandas as pd
-from helper_fns.process_names.overlap_fns import remove_duplicates 
+from process_names.overlap_fns import remove_duplicates 
 
 # read in annotated
 overlaps = pd.read_csv(data_folder / "overlapping_names.csv")

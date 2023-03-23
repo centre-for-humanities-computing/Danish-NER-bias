@@ -1,11 +1,16 @@
 import augmenty 
 
-#import cleaned data
-from helper_fns.process_names.names import (
-                                dk_name_dict, f_name_dict, m_name_dict, 
-                                muslim_name_dict, muslim_f_dict, muslim_m_dict, 
-                                unisex_name_dict
-                                )
+# import cleaned data
+import sys
+from pathlib import Path
+module_path = Path(__file__).parents[1] / "process_names"
+sys.path.append(module_path)
+
+from process_names.names import (
+    dk_name_dict, f_name_dict, m_name_dict, 
+    muslim_name_dict, muslim_f_dict, muslim_m_dict, 
+    unisex_name_dict 
+    )
 
 ## AUGMENTATION ## 
 
