@@ -1,5 +1,11 @@
 '''
-Script to evaluate DaNLP when running several data augmentations
+Script to evaluate DaCY models when running several data augmentations:
+    
+    Concretely, the models are:
+    1. da_dacy_small_trf-0.1.0
+    2. da_dacy_medium_trf-0.1.0
+    3. da_dacy_large_trf-0.1.0
+
 '''
 
 # import ssl certificate to download models
@@ -37,8 +43,8 @@ augmenters = [
 
 ### Define Models to Run ###
 model_dict = {
-    #"dacy_small": "da_dacy_small_trf-0.1.0",
-    #"dacy_medium": "da_dacy_medium_trf-0.1.0",
+    "dacy_small": "da_dacy_small_trf-0.1.0",
+    "dacy_medium": "da_dacy_medium_trf-0.1.0",
     "dacy_large": "da_dacy_large_trf-0.1.0"
 }
 
