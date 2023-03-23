@@ -1,3 +1,7 @@
+'''
+Script to evaluate DaNLP when running several data augmentations
+'''
+
 # import ssl certificate to download models
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context

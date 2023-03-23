@@ -1,12 +1,22 @@
-#import danlp
+'''
+Script to evaluate DaNLP Bert when running several data augmentations
+'''
+
+# import danlp
 from apply_fns.apply_fn_danlp import apply_danlp_bert
+
+# add custom modules 
+import sys
+from pathlib import Path
+module_path = Path(__file__).parents[0] / "evaluate_fns"
+sys.path.append(module_path)
 
 # Dataset
 from dacy.datasets import dane
 testdata = dane(splits=["test"], redownload=True, open_unverified_connected=True)
 
 ### Define augmenters ###
-from helper_fns.augmentation import dk_aug, muslim_aug, f_aug, m_aug, muslim_f_aug, muslim_m_aug, unisex_aug
+from evaluate_fns.augmentation import dk_aug, muslim_aug, f_aug, m_aug, muslim_f_aug, muslim_m_aug, unisex_aug
 
 n = 20
 # augmenter, name, n repetitions 
@@ -26,6 +36,6 @@ model_dict = {
 }
 
 ### Performance ###
-from helper_fns.performance import eval_model_augmentation 
+from evaluate_fns.performance import eval_model_augmentation 
 
 eval_model_augmentation(model_dict, augmenters, testdata)
