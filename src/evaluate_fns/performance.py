@@ -8,21 +8,22 @@ import pandas as pd
 def eval_model_augmentation(model_dict, augmenters, dataset):
     '''
     Return CSV file of model performance on NER task with different name augmentations
-    using DACY score function
+    using the DaCy score function
 
-    input:
-    - model_dict : dictionary of models to be run
-    - dataset : test dataset for model eval
-    - augmenters 
+    Args:
+        - model_dict : dictionary of models to be run
+        - dataset : test dataset for model eval
+        - augmenters 
 
-    output: 
-    - CSV file in folder "robustness" (creates directory if it does not exist)
+    Output: 
+        - CSV file in folder "results" (creates directory if it does not exist)
+
     '''
 
     # define output path
-    output_path = os.path.join("..", "robustness")
+    outfolder = "results"
 
-    Path("../robustness").mkdir(parents=True, exist_ok=True)
+    Path(outfolder).mkdir(parents=True, exist_ok=True)
     
     # loop over all models in model_dict 
     for mdl in model_dict:
@@ -59,4 +60,4 @@ def eval_model_augmentation(model_dict, augmenters, dataset):
 
         scores = pd.concat(scores)
 
-        scores.to_csv(f"{output_path}/{mdl}_augmentation_performance.csv")
+        scores.to_csv(f"{outfolder}/{mdl}_augmentation_performance.csv")

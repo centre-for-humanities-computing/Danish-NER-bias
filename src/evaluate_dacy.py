@@ -1,17 +1,33 @@
-#import ssl certificate to download spacy models
+'''
+Script to evaluate DaCY models when running several data augmentations:
+    
+    Concretely, the models are:
+    1. da_dacy_small_trf-0.1.0
+    2. da_dacy_medium_trf-0.1.0
+    3. da_dacy_large_trf-0.1.0
+
+'''
+
+# import ssl certificate to download models
 import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
 # import packages
 import spacy
-import dacy 
+import dacy
+
+# add custom modules 
+import sys
+from pathlib import Path
+module_path = Path(__file__).parents[0] / "evaluate_fns"
+sys.path.append(module_path)
 
 # Dataset
 from dacy.datasets import dane
 testdata = dane(splits=["test"], redownload=True, open_unverified_connected=True)
 
 ### Define augmenters ###
-from helper_fns.augmentation import dk_aug, muslim_aug, f_aug, m_aug, muslim_f_aug, muslim_m_aug, unisex_aug
+from evaluate_fns.augmentation import dk_aug, muslim_aug, f_aug, m_aug, muslim_f_aug, muslim_m_aug, unisex_aug
 
 n = 20
 # augmenter, name, n repetitions 
@@ -33,6 +49,6 @@ model_dict = {
 }
 
 ### Performance ###
-from helper_fns.performance import eval_model_augmentation 
+from evaluate_fns.performance import eval_model_augmentation 
 
 eval_model_augmentation(model_dict, augmenters, testdata)

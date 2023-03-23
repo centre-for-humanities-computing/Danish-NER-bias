@@ -8,8 +8,7 @@ m_name_dict = male_names()
 # define path 
 from pathlib import Path
 path = Path(__file__) # path to current file
-path.parents[1] # two directories up
-data_folder = path.parents[1] / "names_csv_files" 
+data_folder = path.parents[2] / "name_lists" 
 
 # read in csv files
 men_2023 = pd.read_csv(data_folder / "first_names_2023_men.csv")
