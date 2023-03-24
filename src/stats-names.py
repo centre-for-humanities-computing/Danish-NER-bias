@@ -1,7 +1,12 @@
 import pandas as pd
 
-import helper_fns
-from helper_fns.process_names.names import (
+# add custom modules 
+import sys
+from pathlib import Path
+module_path = Path(__file__).parents[0] / "process_names"
+sys.path.append(str(module_path))
+
+from process_names.names import (
                                 dk_name_dict, f_name_dict, m_name_dict, 
                                 muslim_name_dict, muslim_f_dict, muslim_m_dict, 
                                 unisex_name_dict
