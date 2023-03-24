@@ -63,7 +63,7 @@ sudo bash polyglot.sh
 The ```polyglot.sh``` script will both install devtools, packages and run the evaluation of the model in a seperately created environment called ```polyenv```. 
 
 ## Acknowledgements
-This project builds upon code originally developed for [DaCy](https://github.com/centre-for-humanities-computing/DaCy) and utilizes the package [augmenty](https://kennethenevoldsen.github.io/augmenty/) for name augmentation. 
+The name augmentation was performed using [augmenty](https://kennethenevoldsen.github.io/augmenty/) and model evaluation was performed using the [DaCy](https://github.com/centre-for-humanities-computing/DaCy) framework. 
 
 ## Citation
 Bibtex citation
