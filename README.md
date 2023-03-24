@@ -2,9 +2,9 @@
 
 This repository contains the code used to produce the results in the paper "**Detecting intersectionality in NER models: A data-driven approach**" by Lassen et al. (2023). 
 
-The project investigates the effect of intersectional biases in Danish language models (see [list]()) used for Named Entity Recognition (NER). This is achieved by applying a data augmentation technique, namely augmenting all names in the [DaNe](https://aclanthology.org/2020.lrec-1.565/) dataset on gender-divided name lists for both majority and minority names. 
+The project investigates the effect of intersectional biases in Danish language models (see [list](https://github.com/centre-for-humanities-computing/Danish-NER-bias#danish-language-models)) used for Named Entity Recognition (NER). This is achieved by applying a data augmentation technique, namely augmenting all names in the [DaNe](https://aclanthology.org/2020.lrec-1.565/) testset on gender-divided name lists for both majority and minority names. 
 
-For instructions on how to reproduce the results, please refer to the [Pipeline](https://github.com/centre-for-humanities-computing/Danish-NER-bias#pipeline) section. To cite this repository and/or paper, see [Citation](). 
+For instructions on how to reproduce the results, please refer to the [Pipeline](https://github.com/centre-for-humanities-computing/Danish-NER-bias#pipeline) section. To cite this repository and/or paper, see [Citation](https://github.com/centre-for-humanities-computing/Danish-NER-bias#citation). 
 
 ## Project structure 
 The repository has the following directory structure:
