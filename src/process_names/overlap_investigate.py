@@ -1,3 +1,8 @@
+'''
+Script used to investigate the overlap between old DaCy name lists and the new name 2023 name lists. 
+Additionally used to find overlap between between majority and minority names which are then removed in names.py preprocessing. 
+'''
+
 import pandas as pd 
 from dacy.datasets import female_names, male_names
 

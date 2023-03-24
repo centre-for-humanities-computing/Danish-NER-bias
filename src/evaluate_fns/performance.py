@@ -1,3 +1,9 @@
+'''
+Script containing the pipeline for evaluating language models when running data augmentations with the DaCY framework. 
+Used in all evaluate_XX.py scripts. 
+
+'''
+
 from dacy.score import n_sents_score, score
 from pathlib import Path
 import spacy

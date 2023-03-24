@@ -1,3 +1,8 @@
+'''
+Script used to load name augmentations when evaluate_XX.py models are run. 
+
+'''
+
 import augmenty 
 
 # import cleaned data

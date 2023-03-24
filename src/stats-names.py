@@ -1,3 +1,11 @@
+'''
+Script to give an overview of the amount of first and last names in each group (All, Women, Men in Majoirty, Minority)
+
+To run this script and get this overview, type: 
+    - python src/stats-names.py 
+
+'''
+
 import pandas as pd
 
 # add custom modules 

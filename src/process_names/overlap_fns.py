@@ -1,3 +1,8 @@
+'''
+Functions to find overlap between name lists. Used to remove overlap between majority and minority names in names.py preprocessing. 
+
+'''
+
 # define function to find overlap
 def find_overlap(lst1, lst2):
     lst1 = set(lst1)
