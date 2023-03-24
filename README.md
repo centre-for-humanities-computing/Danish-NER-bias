@@ -2,12 +2,13 @@
 
 This repository contains the code used to produce the results in the paper "**Detecting intersectionality in NER models: A data-driven approach**" by Lassen et al. (2023). 
 
-The project investigates the effect of intersectional biases in several Danish models used for Named Entity Recognition (NER).
+The project investigates the effect of intersectional biases in Danish language models (see [list]()) used for Named Entity Recognition (NER). This is achieved by applying a data augmentation technique, namely augmenting all names in the [DaNe](https://aclanthology.org/2020.lrec-1.565/) dataset on gender-divided name lists for both majority and minority names. 
 
+For instructions on how to reproduce the results, please refer to the [Pipeline](https://github.com/centre-for-humanities-computing/Danish-NER-bias#pipeline) section. To cite this repository and/or paper, see [Citation](). 
 
-## Project Structure 
+## Project structure 
 The repository has the following directory structure:
-| <div style="width:120px">property</div>| Description |
+| <div style="width:120px"></div>| Description |
 |---------|:-----------|
 | ```name_lists``` | Contains name lists used for data augmentation|
 | ```requirements``` | Requirements file for all models, and a seperate file for polyglot |
@@ -21,18 +22,21 @@ The repository has the following directory structure:
 
 
 
-The repo evaluates the following models: 
-* ScandiNER
-* DaCY large (da_dacy_large_trf-0.1.0)
-* DaCy medium (da_dacy_medium_trf-0.1.0)
-* DaCY small (da_dacy_small_trf-0.1.0)
-* DaNLP BERT
-* Flair
-* NERDA
-* SpaCy large (da_core_news_lg-3.4.0)
-* SpaCy medium (da_core_news_md-3.4.0)
-* SpaCy small (da_core_news_sm-3.4.0)
-* Polyglot
+### Danish language models
+The following models are evaluated:
+* [ScandiNER](https://huggingface.co/saattrupdan/nbailab-base-ner-scandi)
+* [DaCy models](https://github.com/centre-for-humanities-computing/DaCy)
+    * DaCY large (da_dacy_large_trf-0.1.0)
+    * DaCy medium (da_dacy_medium_trf-0.1.0)
+    * DaCY small (da_dacy_small_trf-0.1.0)
+* [DaNLP BERT](https://danlp-alexandra.readthedocs.io/en/stable/docs/tasks/ner.html#bert)
+* [Flair](https://github.com/flairNLP/flair)
+* [NERDA](https://github.com/ebanalyse/NERDA/)
+* [Spacy models](https://spacy.io/models/da)
+    * SpaCy large (da_core_news_lg-3.4.0)
+    * SpaCy medium (da_core_news_md-3.4.0)
+    * SpaCy small (da_core_news_sm-3.4.0)
+* [Polyglot](https://polyglot.readthedocs.io/en/latest/NamedEntityRecognition.html)
 
 
 ## Pipeline 
@@ -59,5 +63,10 @@ sudo bash polyglot.sh
 The ```polyglot.sh``` script will both install devtools, packages and run the evaluation of the model in a seperately created environment called ```polyenv```. 
 
 ## Acknowledgements
-This project builds upon code originally developed for [DaCy](https://github.com/centre-for-humanities-computing/DaCy) and utilizes the package [augmenty](https://kennethenevoldsen.github.io/augmenty/) for data augmentation. 
+This project builds upon code originally developed for [DaCy](https://github.com/centre-for-humanities-computing/DaCy) and utilizes the package [augmenty](https://kennethenevoldsen.github.io/augmenty/) for name augmentation. 
 
+## Citation
+Bibtex citation
+```
+Coming soon! 
+```
