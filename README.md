@@ -40,7 +40,7 @@ The following models are evaluated:
 
 
 ## Pipeline 
-The pipeline has been tested on Ubuntu ([UCloud](https://cloud.sdu.dk/)). It cannot be confirmed that it will work on Windows without modifications. 
+The pipeline has been built on Ubuntu ([UCloud](https://cloud.sdu.dk/)). 
 
 For all models except ```polyglot```, first run the ```setup.sh```
 ```
