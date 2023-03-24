@@ -26,3 +26,6 @@ python3.9 src/evaluate_danlp.py
 
 # happy message ! 
 echo -e "[INFO:] Evaluation of all models done! Results saved ..." # user msg
+
+# deactivate virtual env 
+deactivate
