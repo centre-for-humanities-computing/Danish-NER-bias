@@ -29,3 +29,5 @@ python3.9 src/evaluate_polyglot.py
 
 echo -e "[INFO:] Evaluation done! Results saved ..." # user msg
 
+# deactivate virtual env 
+deactivate
