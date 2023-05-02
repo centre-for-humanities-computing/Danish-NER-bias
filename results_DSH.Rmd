@@ -15,7 +15,7 @@ library(janitor)
 source("utils-R/utility.R")
 ```
 
-
+## Read in File, Average Values ! 
 ```{r read files}
 perf <- readbulk::read_bulk(directory = "results", extension = ".csv")
 
@@ -28,6 +28,7 @@ perf = perf %>%
          )
 ```
 
+## Define Scoring Function (Pairwise Bonferroni T-tests)
 ```{r scoring summary functions}
 # t-test function for the score_to_df function
 score_t_test = function(mdl, augmenter, default, data, score){
@@ -81,6 +82,7 @@ score_to_df = function(data, score, baseline){
 }
 ```
 
+## Rename model and augmenters
 ```{r rename model and aug}
 # original model names
 names_from = c("spacy_large", "spacy_medium", "dacy_large", "dacy_medium", "danlp_bert", "spacy_small", "flair", "nerda_bert", "dacy_small", "polyglot", "scandi_ner")
@@ -95,8 +97,7 @@ aug_names_from = c("Danish names", "Muslim names", "Female names", "Male names",
 aug_names_to = c("Majority all", "Minority all", "Majority Women", "Majority Men", "Minority Women", "Minority Men", "Unisex")
 ```
 
-
-## Table 1: Precision and Recall: NER without MISC 
+## Tables 1 and 2!  
 ### Fix order of models and groups
 ```{r}
 order_models <- c("scandi_ner","dacy_large", "dacy_medium", "dacy_small", "danlp_bert", "flair", "nerda_bert", "spacy_large", "spacy_medium", "spacy_small", "polyglot")
@@ -104,6 +105,22 @@ order_models <- c("scandi_ner","dacy_large", "dacy_medium", "dacy_small", "danlp
 order_groups = c("Majority all", "Minority all", "Majority Men", "Minority Men", "Majority Women", "Minority Women", "Unisex")
 ```
 
+### Define function for collapsing model names 
+```{r}
+# collapse rows
+collapse_rows_df <- function(df, variable){
+  group_var <- enquo(variable)
+  df %>%
+    group_by(!! group_var) %>%
+    mutate(groupRow = 1:n()) %>%
+    ungroup() %>%
+    mutate(!!quo_name(group_var) := ifelse(groupRow == 1, as.character(!! group_var), "")) %>%
+    select(-c(groupRow))
+}
+```
+Function credits: https://stackoverflow.com/questions/51450402/how-to-collapse-groups-of-row-values-within-a-table-using-formattable 
+
+## Table 1: Precision and Recall: NER without MISC 
 ### Recall 
 #### Create calculations 
 ```{r}
@@ -113,9 +130,7 @@ select(model,
          augmenter = augmenter
   ) %>% 
   filter(augmenter != "Input size augmentation 10 sentences" & augmenter != "Input size augmentation 5 sentences")
-```
 
-```{r}
 ent_perf_recall <- score_to_df(recall_misc, "ents_excl_MISC_ents_r", "Danish names")
 ```
 
@@ -135,28 +150,12 @@ ent_per_tbl_recall = ent_perf_recall %>% arrange(factor(model, levels = order_mo
   pivot_wider(names_from = augmenter, values_from=c(string_value)) %>% 
   select(Model=model, all_of(aug_names_to)) # reorder
 
-# create list of 
-high_columns_recall = names(ent_per_tbl_recall)[2:ncol(ent_per_tbl_recall)]
-```
-
-```{r}
-# add metric col 
+# add metric col, specifying the metric 
 Metric <- rep("Recall",11)
-
 ent_per_tbl_recall <- cbind(ent_per_tbl_recall, Metric)
 
 # re order columns 
 ent_per_tbl_recall <- ent_per_tbl_recall[, c("Model", "Metric", order_groups)]
-```
-
-```{r}
-ent_per_tbl_recall %>% 
-  kbl(booktabs=T, 
-      #format="latex",
-      align=c("l", rep("c", nrow(.)-1)),
-      table.attr = "style='width:30%;'") %>% 
-  highlight_highest(., ent_per_tbl_recall, columns = high_columns_recall) %>%
-  kable_classic(full_width = F, html_font = "Cambria")
 ```
 
 #### Create Precision
@@ -167,9 +166,7 @@ select(model,
          augmenter = augmenter
   ) %>% 
   filter(augmenter != "Input size augmentation 10 sentences" & augmenter != "Input size augmentation 5 sentences")
-```
 
-```{r}
 ent_perf_precision <- score_to_df(precision_misc, "ents_excl_MISC_ents_p", "Danish names")
 ```
 
@@ -188,58 +185,151 @@ ent_per_tbl_precision = ent_perf_precision %>% arrange(factor(model, levels = or
   pivot_wider(names_from = augmenter, values_from=c(string_value)) %>% 
   select(Model=model, all_of(aug_names_to)) # reorder
 
-high_columns_precision = names(ent_per_tbl_precision)[2:ncol(ent_per_tbl_precision)]
-```
-
-### cols 
-```{r}
-# add metric col 
+# add metric col, specifying the metric 
 Metric <- rep("Precision",11)
-
 ent_per_tbl_precision <- cbind(ent_per_tbl_precision, Metric)
 
 # re order columns 
 ent_per_tbl_precision <- ent_per_tbl_precision[, c("Model", "Metric", order_groups)]
 ```
 
-### Combine two dataframes 
-```{r}
-both_metrics <- rbind(ent_per_tbl_precision, ent_per_tbl_recall)
-```
 
-```{r}
-both_metrics
-```
 
+#### Combine two dataframes 
 ```{r}
+both_metrics_tb1 <- rbind(ent_per_tbl_precision, ent_per_tbl_recall)
+
+# define new order with the actual names 
 new_order <- c("ScandiNER", "DaCy large", "DaCy medium", "DaCy small", "DaNLP BERT", "Flair", "NERDA", "SpaCy large", "SpaCy medium", "SpaCy small", "Polyglot")
 
 # reorder so that precision and recall comes after each other 
-both_metrics <- both_metrics[order(unlist(sapply(both_metrics$Model, function(x) which(new_order == x)))),] 
+both_metrics_tb1 <- both_metrics_tb1[order(unlist(sapply(both_metrics_tb1$Model, function(x) which(new_order == x)))),] 
 
-rownames(both_metrics) <- NULL 
+# reset index 
+rownames(both_metrics_tb1) <- NULL 
+
 ```
 
-```{r}
-# collapse rows
-collapse_rows_df <- function(df, variable){
-  group_var <- enquo(variable)
-  df %>%
-    group_by(!! group_var) %>%
-    mutate(groupRow = 1:n()) %>%
-    ungroup() %>%
-    mutate(!!quo_name(group_var) := ifelse(groupRow == 1, as.character(!! group_var), "")) %>%
-    select(-c(groupRow))
-}
-```
 
+### Make Table 1
 ```{r}
-collapse_rows_df(both_metrics, Model) %>% 
-  kbl(booktabs=T, 
-      #format="latex",
-      align=c("l", rep("c", nrow(.)-1)),
-      table.attr = "style='width:30%;'") %>% 
+collapse_rows_df(both_metrics_tb1, Model) %>% 
+  kbl(
+    booktabs=T, 
+    col.names = c("Model", "Metric", "Majority", "Minority", "Majority", "Minority", "Majority", "Minority", "Majority"),
+    caption = "NER Performance (Average Precision and Recall Excl. MISC)",
+    #format="latex",
+    align=c("l", rep("c", nrow(.)-1)),
+    table.attr = "style='width:30%;'"
+    ) %>% 
+  add_header_above(c(" " = 1, " " = 1, "All" = 2, "Men" = 2, "Women" = 2, "Unisex"=1)) %>% 
   collapse_rows() %>% 
   kable_classic(full_width = F, html_font = "Cambria") 
 ```
+
+## Table 2 Precision and Recall: PER score  
+### Recall 
+#### Create calculations 
+```{r}
+recall_PER <- perf %>% 
+select(model, 
+         ents_per_type_PER_r,
+         augmenter = augmenter
+  ) %>% 
+  filter(augmenter != "Input size augmentation 10 sentences" & augmenter != "Input size augmentation 5 sentences")
+
+ent_perf_recall_PER <- score_to_df(recall_PER, "ents_per_type_PER_r", "Danish names")
+```
+
+#### Create Recall Table
+```{r ent_perf_recall}
+# create performance table with p-values, standard deviation in parenthesis
+ent_tbl_recall_PER = ent_perf_recall_PER %>% arrange(factor(model, levels = order_models)) %>% 
+  mutate(mean = paste(format(round_half_up(mean, 1), digits = 1, nsmall=1)),
+         p_value_star = if_else(p_value < 0.05, "*", "", missing =""),
+         string_value = if_else(is.na(sd), paste(mean, sep=""),
+                                paste(mean,  " (", 
+                                      format(round_half_up(sd, 1), digits = 1, nsmall=1), 
+                                      ")", p_value_star, sep="")),
+         model = plyr::mapvalues(model, from=names_from, to=names_to),
+         augmenter = plyr::mapvalues(augmenter, from=aug_names_from, to=aug_names_to)) %>% 
+  select(-c(mean, sd, p_value, p_value_star, conf_int)) %>% 
+  pivot_wider(names_from = augmenter, values_from=c(string_value)) %>% 
+  select(Model=model, all_of(aug_names_to)) # reorder
+
+# add metric col, specifying the metric 
+Metric <- rep("Recall",11)
+ent_tbl_recall_PER <- cbind(ent_tbl_recall_PER, Metric)
+
+# re order columns 
+ent_tbl_recall_PER <- ent_tbl_recall_PER[, c("Model", "Metric", order_groups)]
+```
+
+#### Create Precision
+```{r}
+precision_PER <- perf %>% 
+select(model, 
+         ents_per_type_PER_p,
+         augmenter = augmenter
+  ) %>% 
+  filter(augmenter != "Input size augmentation 10 sentences" & augmenter != "Input size augmentation 5 sentences")
+
+ent_perf_precision_PER <- score_to_df(precision_PER, "ents_per_type_PER_p", "Danish names")
+```
+
+```{r}
+# create performance table with p-values, standard deviation in parenthesis
+ent_tbl_precision_PER = ent_perf_precision_PER %>% arrange(factor(model, levels = order_models)) %>% 
+  mutate(mean = paste(format(round_half_up(mean, 1), digits = 1, nsmall=1)),
+         p_value_star = if_else(p_value < 0.05, "*", "", missing =""),
+         string_value = if_else(is.na(sd), paste(mean, sep=""),
+                                paste(mean,  " (", 
+                                      format(round_half_up(sd, 1), digits = 1, nsmall=1), 
+                                      ")", p_value_star, sep="")),
+         model = plyr::mapvalues(model, from=names_from, to=names_to),
+         augmenter = plyr::mapvalues(augmenter, from=aug_names_from, to=aug_names_to)) %>% 
+  select(-c(mean, sd, p_value, p_value_star, conf_int)) %>% 
+  pivot_wider(names_from = augmenter, values_from=c(string_value)) %>% 
+  select(Model=model, all_of(aug_names_to)) # reorder
+
+# add metric col, specifying the metric 
+Metric <- rep("Precision",11)
+ent_tbl_precision_PER <- cbind(ent_tbl_precision_PER, Metric)
+
+# re order columns 
+ent_tbl_precision_PER <- ent_tbl_precision_PER[, c("Model", "Metric", order_groups)]
+```
+
+#### Combine two dataframes 
+```{r}
+both_metrics_tb2 <- rbind(ent_tbl_precision_PER, ent_tbl_recall_PER)
+
+# define new order with the actual names 
+new_order <- c("ScandiNER", "DaCy large", "DaCy medium", "DaCy small", "DaNLP BERT", "Flair", "NERDA", "SpaCy large", "SpaCy medium", "SpaCy small", "Polyglot")
+
+# reorder so that precision and recall comes after each other 
+both_metrics_tb2 <- both_metrics_tb2[order(unlist(sapply(both_metrics_tb2$Model, function(x) which(new_order == x)))),] 
+
+# reset index 
+rownames(both_metrics_tb2) <- NULL 
+```
+
+
+### Make Table 1
+```{r}
+collapse_rows_df(both_metrics_tb2, Model) %>% 
+  kbl(
+    booktabs=T, 
+    col.names = c("Model", "Metric", "Majority", "Minority", "Majority", "Minority", "Majority", "Minority", "Majority"),
+    caption = "NER scores for 'PER' Entity (Average Precision and Recall)",
+    #format="latex",
+    align=c("l", rep("c", nrow(.)-1)),
+    table.attr = "style='width:30%;'"
+    ) %>% 
+  add_header_above(c(" " = 1, " " = 1, "All" = 2, "Men" = 2, "Women" = 2, "Unisex"=1)) %>% 
+  collapse_rows() %>% 
+  kable_classic(full_width = F, html_font = "Cambria") 
+```
+
+
 
