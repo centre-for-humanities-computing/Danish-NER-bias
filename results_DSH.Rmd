@@ -209,7 +209,7 @@ collapse_rows_df(both_metrics_tb1, Model) %>%
   kbl(
     booktabs=T, 
     col.names = c("Model", "Metric", "Majority", "Minority", "Majority", "Minority", "Majority", "Minority", "Majority"),
-    caption = "NER Performance (Average Precision and Recall Excl. MISC)",
+    caption = "Table 1: NER Performance (Average Precision and Recall Excl. MISC)",
     #format="latex",
     align=c("l", rep("c", nrow(.)-1)),
     table.attr = "style='width:30%;'"
@@ -227,7 +227,7 @@ collapse_rows_df(both_metrics_tb2, Model) %>%
   kbl(
     booktabs=T, 
     col.names = c("Model", "Metric", "Majority", "Minority", "Majority", "Minority", "Majority", "Minority", "Majority"),
-    caption = "NER scores for 'PER' Entity (Average Precision and Recall)",
+    caption = "Table 2: NER scores for 'PER' Entity (Average Precision and Recall)",
     #format="latex",
     align=c("l", rep("c", nrow(.)-1)),
     table.attr = "style='width:30%;'"
@@ -238,4 +238,11 @@ collapse_rows_df(both_metrics_tb2, Model) %>%
   kable_classic(full_width = F, html_font = "Cambria") 
 ```
 
+
+### Save Tables to CSV
+```{r}
+#write_csv(both_metrics_tb1, "table_1_NER_performance_precision_recall.csv")
+
+#write_csv(both_metrics_tb2, "table_2_NER_PER_scores_precision_recall.csv")
+```
 
