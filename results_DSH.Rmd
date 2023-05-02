@@ -1,0 +1,245 @@
+---
+title: "Robustness & Bias in NLP"
+output: html_notebook
+editor_options: 
+  chunk_output_type: console
+---
+
+This notebook contains code for producing the table in the paper. 
+
+```{r}
+library(tidyverse)
+library(kableExtra)
+library(janitor)
+
+source("utils-R/utility.R")
+```
+
+
+```{r read files}
+perf <- readbulk::read_bulk(directory = "results", extension = ".csv")
+
+perf = perf %>% 
+  mutate(across(ends_with("_acc"), ~ .x * 100),
+         across(ends_with("_f"), ~ .x * 100),
+         across(ends_with("_p"), ~ .x * 100),
+         across(ends_with("_r"), ~ .x * 100),
+         across(starts_with("dep"), ~ .x * 100)
+         )
+```
+
+```{r scoring summary functions}
+# t-test function for the score_to_df function
+score_t_test = function(mdl, augmenter, default, data, score){
+  d = data %>% filter(model == mdl)
+
+  x = d[[score]][d$augmenter == augmenter]
+  mu = d[[score]][d$augmenter == default]
+  
+  if (length(mu) == 1){
+    t = t.test(x = x,
+           mu = mu, paired = FALSE, var.equal = FALSE,
+           conf.level = 0.95)
+  } else {
+    t = t.test(x = x,
+           y = mu, paired = FALSE, var.equal = FALSE,
+           conf.level = 0.95) 
+  }
+  return (t)
+}
+
+# score_to_df function: bonferroni adjusted t-tests for all augmentations for all models against a baseline augmentation
+score_to_df = function(data, score, baseline){
+  dfs = NULL
+  i = 1
+  for(mdl in unique(data$model)){
+    for (aug in unique(data$augmenter)){
+      v = data[[score]][data$augmenter == aug & data$model == mdl]
+      
+      if (length(v) <= 2){
+          dfs[[i]] = tibble(model=mdl, augmenter=aug, mean=v[1], sd=NA, 
+                    conf_int = "",
+                    p_value=NA)
+          i = i+1
+          next
+      }
+      
+      mu = mean(v)
+      sigma = sd(v)
+      print(paste(mdl, aug, length(v)))
+      t = score_t_test(mdl=mdl, augmenter=aug, default=baseline, data=data, score=score)
+      
+      p = p.adjust(t$p.value, method = "bonferroni", n = 6)
+
+      dfs[[i]] = tibble(model=mdl, augmenter=aug, mean=mu, sd=sigma, 
+                        conf_int = paste("(",  round(t$conf.int[1], 2),", ",  round(t$conf.int[2], 2), ")", sep = ""),
+                        p_value=p)
+      i = i+1
+    }
+  }
+  return(bind_rows(dfs))
+}
+```
+
+```{r rename model and aug}
+# original model names
+names_from = c("spacy_large", "spacy_medium", "dacy_large", "dacy_medium", "danlp_bert", "spacy_small", "flair", "nerda_bert", "dacy_small", "polyglot", "scandi_ner")
+
+# new model names
+names_to = c("SpaCy large", "SpaCy medium", "DaCy large", "DaCy medium", "DaNLP BERT", "SpaCy small", "Flair", "NERDA", "DaCy small", "Polyglot", "ScandiNER")
+
+# aug names original
+aug_names_from = c("Danish names", "Muslim names", "Female names", "Male names", "Muslim female names","Muslim male names", "Unisex names") 
+
+# aug names new 
+aug_names_to = c("Majority all", "Minority all", "Majority Women", "Majority Men", "Minority Women", "Minority Men", "Unisex")
+```
+
+
+## Table 1: Precision and Recall: NER without MISC 
+### Fix order of models and groups
+```{r}
+order_models <- c("scandi_ner","dacy_large", "dacy_medium", "dacy_small", "danlp_bert", "flair", "nerda_bert", "spacy_large", "spacy_medium", "spacy_small", "polyglot")
+
+order_groups = c("Majority all", "Minority all", "Majority Men", "Minority Men", "Majority Women", "Minority Women", "Unisex")
+```
+
+### Recall 
+#### Create calculations 
+```{r}
+recall_misc <- perf %>% 
+select(model, 
+         ents_excl_MISC_ents_r,
+         augmenter = augmenter
+  ) %>% 
+  filter(augmenter != "Input size augmentation 10 sentences" & augmenter != "Input size augmentation 5 sentences")
+```
+
+```{r}
+ent_perf_recall <- score_to_df(recall_misc, "ents_excl_MISC_ents_r", "Danish names")
+```
+
+#### Create Recall Table
+```{r ent_perf_recall}
+# create performance table with p-values, standard deviation in parenthesis
+ent_per_tbl_recall = ent_perf_recall %>% arrange(factor(model, levels = order_models)) %>% 
+  mutate(mean = paste(format(round_half_up(mean, 1), digits = 1, nsmall=1)),
+         p_value_star = if_else(p_value < 0.05, "*", "", missing =""),
+         string_value = if_else(is.na(sd), paste(mean, sep=""),
+                                paste(mean,  " (", 
+                                      format(round_half_up(sd, 1), digits = 1, nsmall=1), 
+                                      ")", p_value_star, sep="")),
+         model = plyr::mapvalues(model, from=names_from, to=names_to),
+         augmenter = plyr::mapvalues(augmenter, from=aug_names_from, to=aug_names_to)) %>% 
+  select(-c(mean, sd, p_value, p_value_star, conf_int)) %>% 
+  pivot_wider(names_from = augmenter, values_from=c(string_value)) %>% 
+  select(Model=model, all_of(aug_names_to)) # reorder
+
+# create list of 
+high_columns_recall = names(ent_per_tbl_recall)[2:ncol(ent_per_tbl_recall)]
+```
+
+```{r}
+# add metric col 
+Metric <- rep("Recall",11)
+
+ent_per_tbl_recall <- cbind(ent_per_tbl_recall, Metric)
+
+# re order columns 
+ent_per_tbl_recall <- ent_per_tbl_recall[, c("Model", "Metric", order_groups)]
+```
+
+```{r}
+ent_per_tbl_recall %>% 
+  kbl(booktabs=T, 
+      #format="latex",
+      align=c("l", rep("c", nrow(.)-1)),
+      table.attr = "style='width:30%;'") %>% 
+  highlight_highest(., ent_per_tbl_recall, columns = high_columns_recall) %>%
+  kable_classic(full_width = F, html_font = "Cambria")
+```
+
+#### Create Precision
+```{r}
+precision_misc <- perf %>% 
+select(model, 
+         ents_excl_MISC_ents_p,
+         augmenter = augmenter
+  ) %>% 
+  filter(augmenter != "Input size augmentation 10 sentences" & augmenter != "Input size augmentation 5 sentences")
+```
+
+```{r}
+ent_perf_precision <- score_to_df(precision_misc, "ents_excl_MISC_ents_p", "Danish names")
+```
+
+```{r}
+# create performance table with p-values, standard deviation in parenthesis
+ent_per_tbl_precision = ent_perf_precision %>% arrange(factor(model, levels = order_models)) %>% 
+  mutate(mean = paste(format(round_half_up(mean, 1), digits = 1, nsmall=1)),
+         p_value_star = if_else(p_value < 0.05, "*", "", missing =""),
+         string_value = if_else(is.na(sd), paste(mean, sep=""),
+                                paste(mean,  " (", 
+                                      format(round_half_up(sd, 1), digits = 1, nsmall=1), 
+                                      ")", p_value_star, sep="")),
+         model = plyr::mapvalues(model, from=names_from, to=names_to),
+         augmenter = plyr::mapvalues(augmenter, from=aug_names_from, to=aug_names_to)) %>% 
+  select(-c(mean, sd, p_value, p_value_star, conf_int)) %>% 
+  pivot_wider(names_from = augmenter, values_from=c(string_value)) %>% 
+  select(Model=model, all_of(aug_names_to)) # reorder
+
+high_columns_precision = names(ent_per_tbl_precision)[2:ncol(ent_per_tbl_precision)]
+```
+
+### cols 
+```{r}
+# add metric col 
+Metric <- rep("Precision",11)
+
+ent_per_tbl_precision <- cbind(ent_per_tbl_precision, Metric)
+
+# re order columns 
+ent_per_tbl_precision <- ent_per_tbl_precision[, c("Model", "Metric", order_groups)]
+```
+
+### Combine two dataframes 
+```{r}
+both_metrics <- rbind(ent_per_tbl_precision, ent_per_tbl_recall)
+```
+
+```{r}
+both_metrics
+```
+
+```{r}
+new_order <- c("ScandiNER", "DaCy large", "DaCy medium", "DaCy small", "DaNLP BERT", "Flair", "NERDA", "SpaCy large", "SpaCy medium", "SpaCy small", "Polyglot")
+
+# reorder so that precision and recall comes after each other 
+both_metrics <- both_metrics[order(unlist(sapply(both_metrics$Model, function(x) which(new_order == x)))),] 
+
+rownames(both_metrics) <- NULL 
+```
+
+```{r}
+# collapse rows
+collapse_rows_df <- function(df, variable){
+  group_var <- enquo(variable)
+  df %>%
+    group_by(!! group_var) %>%
+    mutate(groupRow = 1:n()) %>%
+    ungroup() %>%
+    mutate(!!quo_name(group_var) := ifelse(groupRow == 1, as.character(!! group_var), "")) %>%
+    select(-c(groupRow))
+}
+```
+
+```{r}
+collapse_rows_df(both_metrics, Model) %>% 
+  kbl(booktabs=T, 
+      #format="latex",
+      align=c("l", rep("c", nrow(.)-1)),
+      table.attr = "style='width:30%;'") %>% 
+  collapse_rows() %>% 
+  kable_classic(full_width = F, html_font = "Cambria") 
+```
+
