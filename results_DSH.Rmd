@@ -216,6 +216,7 @@ collapse_rows_df(both_metrics_tb1, Model) %>%
     ) %>% 
   add_header_above(c(" " = 1, " " = 1, "All" = 2, "Men" = 2, "Women" = 2, "Unisex"=1)) %>% 
   collapse_rows() %>% 
+  add_footnote("variables: ents_excl_MISC_ents_p and ents_excl_MISC_ents_r") %>% 
   kable_classic(full_width = F, html_font = "Cambria") 
 ```
 
@@ -233,6 +234,7 @@ collapse_rows_df(both_metrics_tb2, Model) %>%
     ) %>% 
   add_header_above(c(" " = 1, " " = 1, "All" = 2, "Men" = 2, "Women" = 2, "Unisex"=1)) %>% 
   collapse_rows() %>% 
+  add_footnote("variables: ents_per_type_PER_p and ents_per_type_PER_r") %>% 
   kable_classic(full_width = F, html_font = "Cambria") 
 ```
 
