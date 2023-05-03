@@ -7,22 +7,22 @@ source ./env/bin/activate
 
 # evaluating models 
 echo -e "[INFO:] Evaluating SpaCY models ..." # user msg
-python3.9 src/evaluate_spacy.py
+python3.9 src/evaluate_models.py -m spacy
 
 echo -e "[INFO:] Evaluating DaCy models ..." # user msg
-python3.9 src/evaluate_dacy.py
+python3.9 src/evaluate_models.py -m dacy
 
 echo -e "[INFO:] Evaluating Scandi-NER ..." # user msg
-python3.9 src/evaluate_scandi.py
+python3.9 src/evaluate_models.py -m scandi_ner
 
 echo -e "[INFO:] Evaluating flair ..." # user msg
-python3.9 src/evaluate_flair.py
+python3.9 src/evaluate_models.py -m flair
 
 echo -e "[INFO:] Evaluating NERDA BERT ..." # user msg
-python3.9 src/evaluate_nerda.py
+python3.9 src/evaluate_models.py -m nerda
 
 echo -e "[INFO:] Evaluating DaNLP BERT ..." # user msg
-python3.9 src/evaluate_danlp.py
+python3.9 src/evaluate_models.py -m danlp
 
 # happy message ! 
 echo -e "[INFO:] Evaluation of all models done! Results saved ..." # user msg
