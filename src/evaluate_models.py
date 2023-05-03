@@ -24,12 +24,14 @@ sys.path.append(module_path)
 # import augmenters, performance function
 from evaluate_fns.augmentation import dk_aug, muslim_aug, f_aug, m_aug, muslim_f_aug, muslim_m_aug, unisex_aug
 from evaluate_fns.performance import eval_model_augmentation 
+from evaluate_fns.fairness_metrics import eval_fairness_metrics
 
 def input_parse():
     parser = argparse.ArgumentParser()
 
     # add arguments 
     parser.add_argument("-m", "--model", help = "model framework you want to evalute", type = str, default = "spacy") 
+    parser.add_argument("-e", "--eval_function", help = "'dacy' to use dacy.score (Lassen et al., 2023) or 'fairness' to use custom scoring function", default = "dacy")
     
     # save arguments to be parsed from the CLI
     args = parser.parse_args()
@@ -93,7 +95,10 @@ def main():
     model_dict = load_model(args.model)
 
     # evaluate 
-    eval_model_augmentation(model_dict, augmenters, testdata)
+    if args.eval_function == "dacy":
+        eval_model_augmentation(model_dict, augmenters, testdata)
+    elif args.eval_function == "fairness":
+        eval_fairness_metrics(model_dict, augmenters, testdata)
 
 # run script 
 if __name__ == "__main__":
