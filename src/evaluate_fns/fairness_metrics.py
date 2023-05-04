@@ -83,7 +83,9 @@ def eval_fairness_metrics(model_dict:dict, augmenters:list, dataset, ents_to_kee
             # augment
             i += 1
             for n in range(k):
-                print(f"{n+1}/{k}")    
+                print(f"{n+1}/{k}")
+
+                # augment corpus 
                 augmented_corpus = [e for example in examples for e in aug(apply_fn, example)] #iterate over examples 
             
                 for e in augmented_corpus:
