@@ -14,11 +14,11 @@ from dacy.datasets import dane
 
 # utils
 import argparse
+import pathlib 
 
 # add custom modules 
 import sys
-from pathlib import Path
-module_path = Path(__file__).parents[0] / "evaluate_fns"
+module_path = pathlib.Path(__file__).parents[0] / "evaluate_fns"
 sys.path.append(module_path)
 
 # import augmenters, performance function
@@ -76,6 +76,10 @@ def main():
     # define args
     args = input_parse()
 
+    # paths
+    path = pathlib.Path(__file__)
+    outfolder = path.parents[1] / "results_DSH"
+
     # import data set 
     testdata = dane(splits=["test"], redownload=True, open_unverified_connected=True)
 
@@ -98,7 +102,11 @@ def main():
     if args.eval_function == "dacy":
         eval_model_augmentation(model_dict, augmenters, testdata)
     elif args.eval_function == "fairness":
-        eval_fairness_metrics(model_dict, augmenters, testdata)
+        # run for only per entity
+        eval_fairness_metrics(model_dict=model_dict, augmenters=augmenters, dataset=testdata, ents_to_keep=["PER"], outfolder=outfolder, filename="PER")
+
+        # run for all ents excl. MISC 
+        eval_fairness_metrics(model_dict=model_dict, augmenters=augmenters, dataset=testdata, ents_to_keep=["PER", "LOC", "ORG"], outfolder=outfolder, filename="ALL_EXCL_MISC")
 
 # run script 
 if __name__ == "__main__":

@@ -1,8 +1,21 @@
-import augmenty 
+'''
+Script containing the pipeline for extracting fairness metrics 
+Used in all evaluate_XX.py scripts. 
+'''
+
+# utils 
+import pathlib
+
+# model eval
 import spacy
 import dacy
-import pathlib
-from evaluate_fns.wrapped_spacy_scorer import DaCyScorer
+
+from evaluate_fns.utils.wrapped_spacy_scorer import DaCyScorer
+
+# augmentation
+import augmenty 
+
+# data wrangling 
 import pandas as pd 
 
 def filter_ents(doc, ents_to_keep):
@@ -10,13 +23,28 @@ def filter_ents(doc, ents_to_keep):
   doc.ents = ents
   return doc
 
-def eval_fairness_metrics(model_dict, augmenters, dataset):
+def eval_fairness_metrics(model_dict:dict, augmenters:list, dataset, ents_to_keep:list, outfolder:pathlib.Path(), filename:str):
+    '''
+    Return CSV file of fairness metrics (FP, TP, FN & Precision/Recall) on NER task with different name augmentations. 
+    Fairness metrics will be calculated for all the ents you wish to include (ents_to_keep).
+
+    Args:
+        - model_dict : dictionary of models to be run
+        - augmenters : list containing tuples of already loaded augmenters in the format: [(augmenter_obj, augmenter_name, n_repetitions)]
+        - dataset : test dataset for model eval
+        - ents_to_keep : entities to keep in the dataset for model evaluation in the format: ["PER", "LOC", "ORG", "MISC"]
+        - outfolder : path where you wish to save the CSV file.
+        - filename : additional unique identifier for filename: "{mdl}_{filename}_fairness.csv"
+
+    Output: 
+        - .CSV file with fairness metrics in outfolder 
+    '''
+
     # define output path
-    outfolder = "results_DSH"
-    pathlib.Path(outfolder).mkdir(parents=True, exist_ok=True)
+    outfolder.mkdir(parents=True, exist_ok=True)
 
     for mdl in model_dict:
-        print(f"[INFO]: Scoring model '{mdl}' using DaCy")
+        print(f"[INFO]: Scoring model '{mdl}'")
 
         # load model depending on model name (different pipelines)
         if "dacy" in mdl:
@@ -26,7 +54,15 @@ def eval_fairness_metrics(model_dict, augmenters, dataset):
             spacy.prefer_gpu()
         else:
             apply_fn = model_dict[mdl]
-        
+
+        # filter dataset 
+        examples = list(dataset(apply_fn))
+
+        for e in examples:
+            e.predicted = filter_ents(e.predicted, ents_to_keep = ents_to_keep)
+            e.reference = filter_ents(e.reference, ents_to_keep = ents_to_keep) 
+
+        # begin evaluation 
         i = 0
         scores = []
         for aug, nam, k in augmenters:
@@ -34,8 +70,9 @@ def eval_fairness_metrics(model_dict, augmenters, dataset):
 
             # augment
             i += 1
-            for n in range(k):    
-                augmented_corpus = [e for example in dataset(apply_fn) for e in aug(apply_fn, example)]
+            for n in range(k):
+                print(f"{n+1}/{k}")    
+                augmented_corpus = [e for example in examples for e in aug(apply_fn, example)] #iterate over examples 
             
                 for e in augmented_corpus:
                     e.predicted = apply_fn(e.text)
@@ -55,50 +92,23 @@ def eval_fairness_metrics(model_dict, augmenters, dataset):
                     "FP":score_obj.fp, 
                     "TP":score_obj.tp, 
                     "FN":score_obj.fn,
-                    "Precision":score_obj.precision,
-                    "Recall":score_obj.recall,
-                    "F1_score":score_obj.fscore
+                    "precision":score_obj.precision,
+                    "recall":score_obj.recall,
+                    "F1_score":score_obj.fscore,
+                    "ents_included":ents_to_keep
                     }
 
                 # create pandas dataframe
                 scores_data = pd.DataFrame.from_records(score_vals, index=[0])
 
                 # reorder columns 
-                scores_data = scores_data[["FP", "TP", "FN", "Precision", "Recall", "F1_score", "k", "model", "augmenter", "i"]]
+                scores_data = scores_data[["ents_included","FP", "TP", "FN", "precision", "recall", "F1_score", "k", "model", "augmenter", "i"]]
 
-                print(f"FP: {score_obj.fp}, TP: {score_obj.tp}, FN: {score_obj.fn}")
-
+                # append to list of dataframes
                 scores.append(scores_data)
-
+        
+        # concatenate all dataframes (one per augmentation) into one file
         scores = pd.concat(scores)
-        scores.to_csv(f"{outfolder}/{mdl}_fairness_metrics.csv")
-
-
-
-
-
-if __name__ == "__main__":
-    # import data set 
-    testdata = dane(splits=["test"], redownload=True, open_unverified_connected=True)
-
-    # define augmenters: augmenter, name, n repetitions 
-    n = 20
-    augmenters = [
-        (dk_aug, "Danish names", n),
-        (muslim_aug, "Muslim names", n),
-        (f_aug, "Female names", n),
-        (m_aug, "Male names", n),
-        (muslim_f_aug, "Muslim female names", n),
-        (muslim_m_aug, "Muslim male names", n),
-        (unisex_aug, "Unisex names", n),
-    ]
-
-    # define models to run 
-    model_dict = {
-        "spacy_small": "da_core_news_sm",
-        "spacy_medium": "da_core_news_md",
-        "spacy_large": "da_core_news_lg",
-    }
-
-    # evaluate 
-    eval_fairness_metrics(model_dict, augmenters, testdata)
+        
+        # save to csv
+        scores.to_csv(f"{outfolder}/{mdl}_{filename}_fairness.csv")
