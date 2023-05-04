@@ -1,6 +1,14 @@
 '''
 Script to evaluate all models (except polyglot) in a NER task on the DaNE test dataset when running several data augmentations on first & last names [PER] (e.g., majority vs minority names)
 
+Run script in terminal by typing: 
+    python src/evaluate_models.py -m chosen_model -e chosen_eval_function
+
+For the optional arguments, you can write the following: 
+    -m: 'spacy', 'dacy', 'nerda', 'scandi_ner', 'flair', 'danlp' 
+    -e: 'dacy' or 'fairness'
+
+Where -m is to choose between model frameworks and -e is to choose between evaluation function
 '''
 
 # import ssl certificate to download models
@@ -31,7 +39,7 @@ def input_parse():
 
     # add arguments 
     parser.add_argument("-m", "--model", help = "model framework you want to evalute", type = str, default = "spacy") 
-    parser.add_argument("-e", "--eval_function", help = "'dacy' to use dacy.score (Lassen et al., 2023) or 'fairness' to use custom scoring function", default = "dacy")
+    parser.add_argument("-e", "--eval_function", help = "'dacy' to use dacy.score (Lassen et al., 2023) or 'fairness' to use custom scoring function", default = "fairness")
     
     # save arguments to be parsed from the CLI
     args = parser.parse_args()
