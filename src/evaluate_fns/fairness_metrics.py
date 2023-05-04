@@ -6,17 +6,20 @@ Used in all evaluate_XX.py scripts.
 # utils 
 import pathlib
 
+# data wrangling 
+import pandas as pd 
+
+# vocabulary 
+from spacy.lang.da import Danish
+
+# augmentation
+import augmenty 
+
 # model eval
 import spacy
 import dacy
 
 from evaluate_fns.utils.wrapped_spacy_scorer import DaCyScorer
-
-# augmentation
-import augmenty 
-
-# data wrangling 
-import pandas as pd 
 
 def filter_ents(doc, ents_to_keep):
   ents = [e for e in doc.ents if e.label_ in ents_to_keep]
@@ -46,18 +49,27 @@ def eval_fairness_metrics(model_dict:dict, augmenters:list, dataset, ents_to_kee
     for mdl in model_dict:
         print(f"[INFO]: Scoring model '{mdl}'")
 
-        # load model depending on model name (different pipelines)
+        # load model depending on model name (different pipelines) and load dataset  
         if "dacy" in mdl:
             apply_fn = dacy.load(model_dict[mdl])
+            examples = list(dataset(apply_fn))
+
         elif "spacy" in mdl:
             apply_fn = spacy.load(model_dict[mdl])
             spacy.prefer_gpu()
+            examples = list(dataset(apply_fn)) # load dataset 
+
+        elif "scandi_ner" in mdl: 
+            apply_fn = model_dict[mdl]
+            examples = list(dataset(apply_fn)) # load dataset 
+
         else:
             apply_fn = model_dict[mdl]
+            nlp = Danish() # load vocabulary 
+            examples = apply_fn(dataset(nlp), use_spacy=True) # load dataset with function and vocabulary 
+
 
         # filter dataset 
-        examples = list(dataset(apply_fn))
-
         for e in examples:
             e.predicted = filter_ents(e.predicted, ents_to_keep = ents_to_keep)
             e.reference = filter_ents(e.reference, ents_to_keep = ents_to_keep) 
