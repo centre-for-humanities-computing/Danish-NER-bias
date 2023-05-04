@@ -78,7 +78,10 @@ def main():
 
     # paths
     path = pathlib.Path(__file__)
-    outfolder = path.parents[1] / "results_DSH"
+
+    # fairness metrics paths 
+    outfolder_PER = path.parents[1] / "results_DSH" / "PER"
+    outfolder_ALL = path.parents[1] / "results_DSH" / "ALL_EXCL_MISC"
 
     # import data set 
     testdata = dane(splits=["test"], redownload=True, open_unverified_connected=True)
@@ -102,11 +105,11 @@ def main():
     if args.eval_function == "dacy":
         eval_model_augmentation(model_dict, augmenters, testdata)
     elif args.eval_function == "fairness":
-        # run for only per entity
-        eval_fairness_metrics(model_dict=model_dict, augmenters=augmenters, dataset=testdata, ents_to_keep=["PER"], outfolder=outfolder, filename="PER")
+        # run for only PER entity
+        eval_fairness_metrics(model_dict=model_dict, augmenters=augmenters, dataset=testdata, ents_to_keep=["PER"], outfolder=outfolder_PER, filename="PER")
 
         # run for all ents excl. MISC 
-        eval_fairness_metrics(model_dict=model_dict, augmenters=augmenters, dataset=testdata, ents_to_keep=["PER", "LOC", "ORG"], outfolder=outfolder, filename="ALL_EXCL_MISC")
+        eval_fairness_metrics(model_dict=model_dict, augmenters=augmenters, dataset=testdata, ents_to_keep=["PER", "LOC", "ORG"], outfolder=outfolder_ALL, filename="ALL_EXCL_MISC")
 
 # run script 
 if __name__ == "__main__":
