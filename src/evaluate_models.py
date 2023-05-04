@@ -38,7 +38,7 @@ def input_parse():
     parser = argparse.ArgumentParser()
 
     # add arguments 
-    parser.add_argument("-m", "--model", help = "model framework you want to evalute", type = str, default = "spacy") 
+    parser.add_argument("-m", "--model", help = "model framework you want to evalute", type = str, default = "flair") 
     parser.add_argument("-e", "--eval_function", help = "'dacy' to use dacy.score (Lassen et al., 2023) or 'fairness' to use custom scoring function", default = "fairness")
     
     # save arguments to be parsed from the CLI
