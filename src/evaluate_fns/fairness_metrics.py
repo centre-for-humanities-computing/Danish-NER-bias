@@ -77,6 +77,7 @@ def eval_fairness_metrics(model_dict:dict, augmenters:list, dataset, ents_to_kee
         # begin evaluation 
         i = 0
         scores = []
+        nlp = Danish() # initalise standard nlp for augmentation
         for aug, nam, k in augmenters:
             print(f"\t Running augmenter: {nam} | Amount of times: {k}")
 
@@ -86,7 +87,7 @@ def eval_fairness_metrics(model_dict:dict, augmenters:list, dataset, ents_to_kee
                 print(f"{n+1}/{k}")
 
                 # augment corpus 
-                augmented_corpus = [e for example in examples for e in aug(apply_fn, example)] #iterate over examples 
+                augmented_corpus = [e for example in examples for e in aug(nlp, example)] #iterate over examples and augment using a standard nlp()
             
                 for e in augmented_corpus:
                     e.predicted = apply_fn(e.text)
