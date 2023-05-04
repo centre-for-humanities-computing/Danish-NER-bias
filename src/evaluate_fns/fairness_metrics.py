@@ -66,7 +66,7 @@ def eval_fairness_metrics(model_dict:dict, augmenters:list, dataset, ents_to_kee
         else:
             apply_fn = model_dict[mdl]
             nlp = Danish() # load vocabulary 
-            examples = apply_fn(dataset(nlp), use_spacy=True) # load dataset with function and vocabulary 
+            examples = apply_fn(dataset(nlp)) # load dataset with function and vocabulary 
 
 
         # filter dataset 
