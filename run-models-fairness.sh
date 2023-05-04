@@ -6,7 +6,7 @@
 source ./env/bin/activate
 
 # evaluating models 
-echo -e "[INFO:] Evaluating SpaCY models ..." # user msg
+echo -e "[INFO:] Evaluating SpaCy models ..." # user msg
 python3.9 src/evaluate_models.py -m spacy -e fairness
 
 echo -e "[INFO:] Evaluating DaCy models ..." # user msg
