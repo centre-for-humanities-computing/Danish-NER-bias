@@ -95,7 +95,7 @@ def eval_fairness_metrics(model_dict:dict, augmenters:list, dataset, ents_to_kee
                     "precision":score_obj.precision,
                     "recall":score_obj.recall,
                     "F1_score":score_obj.fscore,
-                    "ents_included":ents_to_keep
+                    "ents_included":[ents_to_keep]
                     }
 
                 # create pandas dataframe
