@@ -59,15 +59,9 @@ def eval_fairness_metrics(model_dict:dict, augmenters:list, dataset, ents_to_kee
             spacy.prefer_gpu()
             examples = list(dataset(apply_fn)) # load dataset 
 
-        elif "scandi_ner" in mdl: 
+        else: 
             apply_fn = model_dict[mdl]
             examples = list(dataset(apply_fn)) # load dataset 
-
-        else:
-            apply_fn = model_dict[mdl]
-            nlp = Danish() # load vocabulary 
-            examples = apply_fn(dataset(nlp)) # load dataset with function and vocabulary 
-
 
         # filter dataset 
         for e in examples:
@@ -84,8 +78,6 @@ def eval_fairness_metrics(model_dict:dict, augmenters:list, dataset, ents_to_kee
             # augment
             i += 1
             for n in range(k):
-                print(f"{n+1}/{k}")
-
                 # augment corpus 
                 augmented_corpus = [e for example in examples for e in aug(nlp, example)] #iterate over examples and augment using a standard nlp()
             
