@@ -1,11 +1,12 @@
 '''
-Script to evaluate all models (except polyglot) in a NER task on the DaNE test dataset when running several data augmentations on first & last names [PER] (e.g., majority vs minority names)
+Script to get fairness metrics (TP/TN/FP/PRECISION/RECALL/F1_SCORE) on all models (except polyglot) in a NER task 
+on the DaNE test dataset when running several data augmentations on first & last names [PER] (e.g., majority vs minority names)
 
 Run script in terminal by typing: 
     python src/evaluate_models.py -m chosen_model
 
 For the optional arguments, you can write the following to chose between model frameworks:
-    -m: 'spacy', 'dacy', 'nerda', 'scandi_ner', 'flair', 'danlp' 
+    -m: 'spacy', 'dacy', 'scandi_ner', 'flair', 'danlp' 
 
 Where -m is to choose between model frameworks
 '''
@@ -30,7 +31,7 @@ sys.path.append(module_path)
 
 # import augmenters, performance function
 from evaluate_fns.augmentation import dk_aug, muslim_aug, f_aug, m_aug, muslim_f_aug, muslim_m_aug, unisex_aug
-from evaluate_fns.performance import eval_model_augmentation 
+from evaluate_fns.fairness_metrics import eval_fairness_metrics
 
 def input_parse():
     parser = argparse.ArgumentParser()
@@ -59,21 +60,21 @@ def load_model(chosen_model):
         }
 
     elif chosen_model == "danlp":
-        # import danlp 
-        from apply_fns.apply_fn_danlp import apply_danlp_bert
-        model_dict = {"danlp_bert": apply_danlp_bert}
-    
-    elif chosen_model == "nerda":
-        from apply_fns.apply_fn_nerda import apply_nerda
-        model_dict = {"nerda_bert": apply_nerda}
+        import spacy_wrap
+        nlp = spacy.blank("da")
+        config = {"model": {"name": "alexandrainst/da-ner-base"}}
+        nlp.add_pipe("token_classification_transformer", config=config)
+        model_dict = {"danlp":nlp}
     
     elif chosen_model == "scandi_ner":
         from apply_fns.apply_fn_scandi import scandi_ner
         model_dict = {"scandi_ner": scandi_ner}   
     
     elif chosen_model == "flair":
-        from apply_fns.apply_fn_flair import apply_flair
-        model_dict = {"flair": apply_flair}  
+        from danlp_spacy_flair import FlairComponent
+        nlp = spacy.blank("da")
+        nlp.add_pipe("danlp_flair", last=True)
+        model_dict = {"flair": nlp}
 
     return model_dict 
 
@@ -106,9 +107,11 @@ def main():
     # define models to run 
     model_dict = load_model(args.model)
 
-    # evaluate 
-    eval_model_augmentation(model_dict, augmenters, testdata)
+    # run for only PER entity
+    eval_fairness_metrics(model_dict=model_dict, augmenters=augmenters, dataset=testdata, ents_to_keep=["PER"], outfolder=outfolder_PER, filename="PER")
 
+    # run for all ents excl. MISC 
+    eval_fairness_metrics(model_dict=model_dict, augmenters=augmenters, dataset=testdata, ents_to_keep=["PER", "LOC", "ORG"], outfolder=outfolder_ALL, filename="ALL_EXCL_MISC")
 
 # run script 
 if __name__ == "__main__":

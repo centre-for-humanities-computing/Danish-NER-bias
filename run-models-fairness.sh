@@ -7,22 +7,19 @@ source ./env/bin/activate
 
 # evaluating models 
 echo -e "[INFO:] Evaluating SpaCy models ..." # user msg
-python3.9 src/evaluate_models.py -m spacy -e fairness
+python3.9 src/fairness_models.py -m spacy
 
 echo -e "[INFO:] Evaluating DaCy models ..." # user msg
-python3.9 src/evaluate_models.py -m dacy -e fairness
+python3.9 src/fairness_models.py -m dacy
 
 echo -e "[INFO:] Evaluating Scandi-NER ..." # user msg
-python3.9 src/evaluate_models.py -m scandi_ner -e fairness
+python3.9 src/fairness_models.py -m scandi_ner
 
 echo -e "[INFO:] Evaluating flair ..." # user msg
-python3.9 src/evaluate_models.py -m flair -e fairness
-
-echo -e "[INFO:] Evaluating NERDA BERT ..." # user msg
-python3.9 src/evaluate_models.py -m nerda -e fairness
+python3.9 src/fairness_models.py -m flair
 
 echo -e "[INFO:] Evaluating DaNLP BERT ..." # user msg
-python3.9 src/evaluate_models.py -m danlp -e fairness
+python3.9 src/fairness_models.py -m danlp 
 
 # happy message ! 
 echo -e "[INFO:] Evaluation of all models done! Results saved ..." # user msg
