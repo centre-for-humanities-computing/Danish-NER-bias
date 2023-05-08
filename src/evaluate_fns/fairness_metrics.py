@@ -9,17 +9,12 @@ import pathlib
 # data wrangling 
 import pandas as pd 
 
-# vocabulary 
-from spacy.lang.da import Danish
-
-# augmentation
-import augmenty 
-
 # model eval
 import spacy
 import dacy
 
-from evaluate_fns.utils.wrapped_spacy_scorer import DaCyScorer
+# import DaCyScorer 
+from evaluate_fns.wrapped_spacy_scorer import DaCyScorer
 
 def filter_ents(doc, ents_to_keep):
   ents = [e for e in doc.ents if e.label_ in ents_to_keep]
@@ -79,7 +74,7 @@ def eval_fairness_metrics(model_dict:dict, augmenters:list, dataset, ents_to_kee
             i += 1
             for n in range(k):
                 # augment corpus 
-                augmented_corpus = [e for example in examples for e in aug(apply_fn, example)] #iterate over examples and augment using a standard nlp()
+                augmented_corpus = [e for example in examples for e in aug(apply_fn, example)] 
             
                 for e in augmented_corpus:
                     e.predicted = apply_fn(e.text)

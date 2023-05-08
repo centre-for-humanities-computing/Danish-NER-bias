@@ -129,4 +129,5 @@ if __name__ == "__main__":
     # score_obj.tp
     # score_obj.fp
     # score_obj.fn
-    print(f"FP: {score_obj.fp}, TP: {score_obj.tp}, FN: {score_obj.fn}")
+    print(f"FP: {score_obj.fp}, TP: {score_obj.tp}, FN: {score_obj.fn}, Precision: {score_obj.precision}, Recall: {score_obj.recall} F1: {score_obj.fscore}")
+    print(scores_dict)
