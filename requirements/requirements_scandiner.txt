@@ -1,0 +1,4 @@
+augmenty>=1.3.1
+dacy>=2.3.2
+spacy>=3.4.4
+pandas>=1.5.3
